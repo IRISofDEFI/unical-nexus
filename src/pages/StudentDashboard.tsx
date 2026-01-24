@@ -7,12 +7,13 @@ import {
   Bell,
   Calendar,
   LogOut,
-  ChevronRight,
-  GraduationCap
+  ChevronRight
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import DashboardCard from "@/components/DashboardCard";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import unicalLogo from "@/assets/logos/unical-logo.png";
+import studentPlaceholder from "@/assets/images/student-placeholder.jpg";
 
 /**
  * Student Dashboard Page
@@ -30,6 +31,7 @@ const studentData = {
   email: "john.adebayo@student.unical.edu.ng",
   semester: "First Semester",
   session: "2024/2025",
+  profileImage: studentPlaceholder, // Will come from backend in future
 };
 
 // Dashboard quick actions - includes Support as requested
@@ -168,10 +170,16 @@ const StudentDashboard = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             {/* Student Info */}
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-secondary rounded-full flex items-center 
-                              justify-center text-secondary-foreground">
-                <GraduationCap size={32} />
-              </div>
+              <Avatar className="w-16 h-16">
+                <AvatarImage 
+                  src={studentData.profileImage} 
+                  alt={`${studentData.name}'s profile`}
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-secondary text-secondary-foreground text-xl font-semibold">
+                  {studentData.name.split(" ").map(n => n[0]).join("")}
+                </AvatarFallback>
+              </Avatar>
               <div>
                 <h2 className="font-heading text-xl font-semibold text-foreground">
                   {studentData.name}
