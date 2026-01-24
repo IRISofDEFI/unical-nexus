@@ -13,8 +13,8 @@ const navItems = [
   { name: "Home", path: "/" },
   { name: "Admissions", path: "/admissions" },
   { name: "Academics", path: "/academics" },
-  { name: "Students", path: "/students" },
-  { name: "Staff", path: "/staff" },
+  { name: "Articles", path: "/articles" },
+  { name: "Staff", path: "/staff-login" },
   { name: "Contact", path: "/contact" },
 ];
 
