@@ -60,7 +60,7 @@ const HeroSection = () => {
               to="/login"
               className="btn-outline-light inline-flex items-center gap-2"
             >
-              Student Portal
+              Login
             </Link>
           </div>
 
