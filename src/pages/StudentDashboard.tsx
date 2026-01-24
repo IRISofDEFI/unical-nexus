@@ -32,7 +32,7 @@ const studentData = {
   session: "2024/2025",
 };
 
-// Dashboard quick actions
+// Dashboard quick actions - includes Support as requested
 const dashboardCards = [
   {
     icon: CreditCard,
@@ -73,11 +73,10 @@ const dashboardCards = [
   },
   {
     icon: Bell,
-    title: "Notifications",
-    description: "View important announcements and alerts",
-    link: "/notifications",
+    title: "Support",
+    description: "Get help with portal and academic issues",
+    link: "/support",
     variant: "accent" as const,
-    badge: 3,
   },
 ];
 

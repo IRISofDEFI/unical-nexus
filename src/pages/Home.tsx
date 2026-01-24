@@ -53,28 +53,28 @@ const services = [
   },
 ];
 
-// Mock news data
+// Mock news data - links to articles page
 const newsItems = [
   {
     title: "UNICAL Ranked Among Top 10 Nigerian Universities",
     excerpt: "The University of Calabar has been recognized as one of the top 10 universities in Nigeria according to the latest ranking by the National Universities Commission.",
     date: "January 20, 2025",
     category: "Achievement",
-    link: "/news/ranking-2025",
+    link: "/articles/unical-ranked-top-10",
   },
   {
     title: "2025/2026 Admission Portal Now Open",
     excerpt: "Prospective students can now apply for admission into various undergraduate and postgraduate programmes for the 2025/2026 academic session.",
     date: "January 15, 2025",
     category: "Admissions",
-    link: "/news/admissions-open",
+    link: "/articles/2026-admission-portal",
   },
   {
     title: "New Faculty of Computing and Information Technology",
     excerpt: "The University Senate has approved the establishment of a new Faculty of Computing and Information Technology to meet the growing demand for tech education.",
     date: "January 10, 2025",
     category: "Announcement",
-    link: "/news/new-faculty",
+    link: "/articles/new-faculty-computing",
   },
 ];
 
@@ -209,7 +209,7 @@ const Home = () => {
               </p>
             </div>
             <a 
-              href="/news" 
+              href="/articles" 
               className="mt-4 sm:mt-0 text-secondary font-medium inline-flex 
                          items-center gap-1 hover:gap-2 transition-all"
             >
