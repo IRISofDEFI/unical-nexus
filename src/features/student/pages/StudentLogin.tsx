@@ -2,12 +2,12 @@ import { Link } from "react-router-dom";
 import { Shield, HelpCircle, FileText, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import LoginForm from "@/components/LoginForm";
+import LoginForm from "@/components/shared/LoginForm";
 import unicalLogo from "@/assets/logos/unical-logo.png";
 
 /**
- * Login Page
- * Portal login page for students and staff
+ * Student Login Page
+ * Portal login page for students
  * Features: Login form, portal info panel, help links
  */
 
@@ -35,7 +35,7 @@ const portalServices = [
   },
 ];
 
-const Login = () => {
+const StudentLogin = () => {
   const handleLogin = (data: { identifier: string; password: string; remember: boolean }) => {
     // Mock login - in real app, this would authenticate
     console.log("Login attempt:", data);
@@ -175,4 +175,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default StudentLogin;

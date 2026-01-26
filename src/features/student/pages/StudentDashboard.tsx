@@ -9,7 +9,7 @@ import {
   ActivityCard,
   CalendarCard,
   NewsCard,
-} from "@/components/dashboard";
+} from "../components";
 import studentPlaceholder from "@/assets/images/student-placeholder.jpg";
 
 /**
