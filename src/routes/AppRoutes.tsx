@@ -1,13 +1,23 @@
 import { Routes, Route } from "react-router-dom";
+
+// Public Pages
 import Home from "@/pages/Home";
-import Login from "@/pages/Login";
-import StaffLogin from "@/pages/StaffLogin";
-import StudentDashboard from "@/pages/StudentDashboard";
-import StaffDashboard from "@/pages/StaffDashboard";
 import Academics from "@/pages/Academics";
 import Articles from "@/pages/Articles";
 import ArticleDetail from "@/pages/ArticleDetail";
 import NotFound from "@/pages/NotFound";
+
+// Student Feature
+import StudentLogin from "@/features/student/pages/StudentLogin";
+import StudentDashboard from "@/features/student/pages/StudentDashboard";
+
+// Staff Feature
+import StaffLogin from "@/features/staff/pages/StaffLogin";
+import StaffDashboard from "@/features/staff/pages/StaffDashboard";
+
+// Admin Feature
+import AdminLogin from "@/features/admin/pages/AdminLogin";
+import AdminDashboard from "@/features/admin/pages/AdminDashboard";
 
 /**
  * AppRoutes Component
@@ -20,8 +30,6 @@ const AppRoutes = () => {
     <Routes>
       {/* Public Routes */}
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/staff-login" element={<StaffLogin />} />
       
       {/* Academic Pages */}
       <Route path="/academics" element={<Academics />} />
@@ -31,10 +39,16 @@ const AppRoutes = () => {
       <Route path="/articles/:id" element={<ArticleDetail />} />
       
       {/* Student Routes */}
+      <Route path="/login" element={<StudentLogin />} />
       <Route path="/student-dashboard" element={<StudentDashboard />} />
       
       {/* Staff Routes */}
+      <Route path="/staff-login" element={<StaffLogin />} />
       <Route path="/staff-dashboard" element={<StaffDashboard />} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
       
       {/* Catch-all for 404 */}
       <Route path="*" element={<NotFound />} />

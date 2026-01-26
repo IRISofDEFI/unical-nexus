@@ -1,6 +1,6 @@
 /**
- * Dashboard Components Index
- * Central export for all dashboard-related components
+ * Student Dashboard Components Index
+ * Central export for all student dashboard components
  */
 
 export { default as DashboardSidebar } from "./DashboardSidebar";

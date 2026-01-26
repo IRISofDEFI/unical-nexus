@@ -13,7 +13,7 @@ import {
   Clock
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import DashboardCard from "@/components/DashboardCard";
+import DashboardCard from "@/components/shared/DashboardCard";
 import unicalLogo from "@/assets/logos/unical-logo.png";
 
 /**
@@ -148,7 +148,7 @@ const pendingTasks = [
 
 const StaffDashboard = () => {
   return (
-    <div className="min-h-screen bg-unical-light-gray">
+    <div className="min-h-screen bg-muted/30">
       {/* Dashboard Header */}
       <header className="bg-primary text-primary-foreground">
         <div className="container-academic">

@@ -1,46 +1,22 @@
 import { Link } from "react-router-dom";
-import { Shield, HelpCircle, Users, FileCheck, Upload, Phone } from "lucide-react";
+import { Shield, HelpCircle, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import LoginForm from "@/components/LoginForm";
+import LoginForm from "@/components/shared/LoginForm";
 import unicalLogo from "@/assets/logos/unical-logo.png";
 
 /**
- * Staff Login Page
- * Portal login page for university staff
- * Features: Staff login form, admin info panel, help links
+ * Admin Login Page
+ * Portal login page for university administrators
+ * Features: Admin login form, security info panel, help links
  */
 
-// Staff portal services information
-const staffServices = [
-  {
-    icon: Users,
-    title: "Manage Students",
-    description: "Access and manage student records and data"
-  },
-  {
-    icon: FileCheck,
-    title: "Verify Payments",
-    description: "Review and verify student payment receipts"
-  },
-  {
-    icon: Upload,
-    title: "Upload Results",
-    description: "Upload and publish semester examination results"
-  },
-  {
-    icon: Shield,
-    title: "Administrative Tools",
-    description: "Access department and faculty admin functions"
-  },
-];
-
-const StaffLogin = () => {
+const AdminLogin = () => {
   const handleLogin = (data: { identifier: string; password: string; remember: boolean }) => {
     // Mock login - in real app, this would authenticate
-    console.log("Staff login attempt:", data);
-    // Redirect to staff dashboard for demo
-    window.location.href = "/staff-dashboard";
+    console.log("Admin login attempt:", data);
+    // Redirect to admin dashboard for demo
+    window.location.href = "/admin-dashboard";
   };
 
   return (
@@ -64,25 +40,32 @@ const StaffLogin = () => {
                     className="h-20 w-20 mx-auto mb-4"
                   />
                   <h1 className="font-heading text-2xl font-semibold text-foreground">
-                    Staff Portal Login
+                    Admin Portal Login
                   </h1>
                   <p className="text-muted-foreground text-sm mt-2">
-                    Access your administrative dashboard
+                    Access administrative controls
                   </p>
                 </div>
 
                 {/* Login Form */}
                 <LoginForm onSubmit={handleLogin} userType="staff" />
 
-                {/* Student Login Link */}
-                <div className="mt-6 pt-6 border-t border-border text-center">
+                {/* Other Login Links */}
+                <div className="mt-6 pt-6 border-t border-border text-center space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Are you a student?{" "}
+                    Not an admin?{" "}
                     <Link 
                       to="/login" 
                       className="text-secondary font-medium hover:underline"
                     >
-                      Student Portal Login
+                      Student Portal
+                    </Link>
+                    {" | "}
+                    <Link 
+                      to="/staff-login" 
+                      className="text-secondary font-medium hover:underline"
+                    >
+                      Staff Portal
                     </Link>
                   </p>
                 </div>
@@ -100,15 +83,15 @@ const StaffLogin = () => {
                                hover:underline"
                   >
                     <HelpCircle size={16} />
-                    ICT Help Desk
+                    ICT Support
                   </a>
                   <a 
-                    href="tel:+2348012345679" 
+                    href="tel:+2348012345680" 
                     className="flex items-center gap-2 text-sm text-secondary 
                                hover:underline"
                   >
                     <Phone size={16} />
-                    +234 801 234 5679
+                    +234 801 234 5680
                   </a>
                 </div>
               </div>
@@ -119,50 +102,32 @@ const StaffLogin = () => {
               <div className="lg:pl-8">
                 {/* Welcome Message */}
                 <span className="text-secondary font-semibold text-sm uppercase tracking-wide">
-                  Welcome to
+                  Restricted Access
                 </span>
                 <h2 className="font-heading text-3xl lg:text-4xl text-foreground mt-2 mb-4">
-                  UNICAL Staff Portal
+                  UNICAL Admin Portal
                 </h2>
                 <p className="text-muted-foreground leading-relaxed mb-8">
-                  The University of Calabar staff portal provides academic and 
-                  administrative staff with secure access to essential management 
-                  tools. Verify payments, manage student records, and upload results 
-                  efficiently.
+                  The University of Calabar admin portal provides authorized 
+                  administrators with full access to university management systems, 
+                  user controls, and system configurations.
                 </p>
 
-                {/* Services Grid */}
-                <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                  {staffServices.map((service) => (
-                    <div 
-                      key={service.title}
-                      className="flex items-start gap-3 p-4 rounded-lg bg-muted/50"
-                    >
-                      <div className="w-10 h-10 bg-accent/10 rounded-lg flex 
-                                      items-center justify-center flex-shrink-0">
-                        <service.icon size={20} className="text-accent" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-foreground text-sm">
-                          {service.title}
-                        </h4>
-                        <p className="text-muted-foreground text-xs mt-1">
-                          {service.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
                 {/* Security Notice */}
-                <div className="bg-primary/5 border-l-4 border-primary p-4 rounded-r-lg">
-                  <h4 className="font-semibold text-foreground text-sm mb-2">
-                    Security Notice
-                  </h4>
-                  <p className="text-muted-foreground text-sm">
-                    For security reasons, staff sessions expire after 30 minutes of 
-                    inactivity. Always log out when using shared computers.
-                  </p>
+                <div className="bg-destructive/10 border-l-4 border-destructive p-4 rounded-r-lg mb-6">
+                  <div className="flex items-start gap-3">
+                    <Shield size={20} className="text-destructive mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-foreground text-sm mb-2">
+                        Security Warning
+                      </h4>
+                      <p className="text-muted-foreground text-sm">
+                        This portal is restricted to authorized administrators only. 
+                        All login attempts are logged and monitored. Unauthorized 
+                        access attempts will be reported.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -176,4 +141,4 @@ const StaffLogin = () => {
   );
 };
 
-export default StaffLogin;
+export default AdminLogin;
