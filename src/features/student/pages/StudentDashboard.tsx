@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { LogOut } from "lucide-react";
 import {
   DashboardSidebar,
   DashboardHeader,
@@ -116,6 +114,11 @@ const recentNews = [
 const StudentDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const handleLogout = () => {
+    // In a real app, this would clear auth state
+    window.location.href = "/login";
+  };
+
   return (
     <div className="min-h-screen bg-muted/30 flex">
       {/* Sidebar */}
@@ -126,11 +129,12 @@ const StudentDashboard = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
-        {/* Header */}
+        {/* Header with logout in dropdown */}
         <DashboardHeader
           studentName={studentData.name}
           profileImage={studentData.profileImage}
           notificationCount={3}
+          onLogout={handleLogout}
         />
 
         {/* Main Content */}
@@ -169,20 +173,12 @@ const StudentDashboard = () => {
           </div>
         </main>
 
-        {/* Footer */}
+        {/* Footer - No logout button */}
         <footer className="bg-primary text-primary-foreground py-4 mt-auto">
-          <div className="px-4 lg:px-8 flex items-center justify-between">
+          <div className="px-4 lg:px-8 flex items-center justify-center">
             <p className="text-sm text-primary-foreground/70">
               © {new Date().getFullYear()} University of Calabar. All rights reserved.
             </p>
-            <Link
-              to="/login"
-              className="flex items-center gap-2 text-sm text-primary-foreground/70 
-                         hover:text-primary-foreground transition-colors"
-            >
-              <LogOut size={16} />
-              <span className="hidden sm:inline">Logout</span>
-            </Link>
           </div>
         </footer>
       </div>
