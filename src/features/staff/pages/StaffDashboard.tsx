@@ -10,11 +10,21 @@ import {
   ChevronRight,
   TrendingUp,
   TrendingDown,
-  Clock
+  Clock,
+  User
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DashboardCard from "@/components/shared/DashboardCard";
 import unicalLogo from "@/assets/logos/unical-logo.png";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 /**
  * Staff Dashboard Page
@@ -147,6 +157,18 @@ const pendingTasks = [
 ];
 
 const StaffDashboard = () => {
+  const navigate = useNavigate();
+  const initials = staffData.name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2);
+
+  const handleLogout = () => {
+    // In a real app, this would clear auth state
+    navigate("/staff-login");
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Dashboard Header */}
@@ -188,22 +210,52 @@ const StaffDashboard = () => {
                 <Bell size={20} />
                 <span className="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full" />
               </button>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-accent rounded-full flex items-center justify-center">
-                  <span className="font-semibold text-sm text-accent-foreground">AO</span>
-                </div>
-                <div className="hidden lg:block">
-                  <p className="text-sm font-medium">{staffData.name}</p>
-                  <p className="text-xs text-primary-foreground/70">{staffData.role}</p>
-                </div>
-              </div>
-              <Link 
-                to="/login"
-                className="p-2 hover:bg-primary-foreground/10 rounded-full"
-                title="Logout"
-              >
-                <LogOut size={20} />
-              </Link>
+              
+              {/* Profile Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-primary rounded-full">
+                    <Avatar className="w-9 h-9 cursor-pointer hover:ring-2 hover:ring-accent/50 transition-all">
+                      <AvatarFallback className="bg-accent text-accent-foreground font-semibold text-sm">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="hidden lg:block text-left">
+                      <p className="text-sm font-medium">{staffData.name}</p>
+                      <p className="text-xs text-primary-foreground/70">{staffData.role}</p>
+                    </div>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-background border border-border shadow-lg z-50">
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium text-foreground">{staffData.name}</p>
+                      <p className="text-xs text-muted-foreground">{staffData.role}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/staff-profile" className="flex items-center gap-2 cursor-pointer">
+                      <User size={16} />
+                      <span>View/Edit Profile</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/staff-settings" className="flex items-center gap-2 cursor-pointer">
+                      <Settings size={16} />
+                      <span>Account Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+                  >
+                    <LogOut size={16} />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
@@ -347,7 +399,7 @@ const StaffDashboard = () => {
         </div>
       </main>
 
-      {/* Simple Footer */}
+      {/* Simple Footer - No logout button */}
       <footer className="bg-primary text-primary-foreground py-6 mt-12">
         <div className="container-academic text-center">
           <p className="text-sm text-primary-foreground/70">
