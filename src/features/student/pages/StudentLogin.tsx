@@ -53,8 +53,8 @@ const StudentLogin = () => {
         <div className="container-academic">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
             
-            {/* Left Column - Login Form */}
-            <div className="order-2 lg:order-1">
+            {/* Login Form - First */}
+            <div className="order-1">
               <div className="card-academic p-8 lg:p-10 max-w-md mx-auto lg:mx-0">
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -114,8 +114,8 @@ const StudentLogin = () => {
               </div>
             </div>
 
-            {/* Right Column - Portal Info */}
-            <div className="order-1 lg:order-2">
+            {/* Portal Info - Second */}
+            <div className="order-2">
               <div className="lg:pl-8">
                 {/* Welcome Message */}
                 <span className="text-secondary font-semibold text-sm uppercase tracking-wide">
