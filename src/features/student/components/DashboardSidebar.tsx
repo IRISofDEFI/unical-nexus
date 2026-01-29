@@ -10,55 +10,84 @@ import {
   GraduationCap,
   HelpCircle,
   ChevronDown,
-  ChevronRight,
   Menu,
   X,
+  Bell,
+  FileText,
+  Receipt,
+  ClipboardList,
+  MessageCircle,
+  Headphones,
 } from "lucide-react";
 import unicalLogo from "@/assets/logos/unical-logo.png";
 import { cn } from "@/lib/utils";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 /**
  * Dashboard Sidebar Component
  * Left navigation sidebar for student dashboard
- * Features grouped navigation sections matching UNICAL portal design
+ * Features accordion-style dropdown menus matching UNICAL portal design
  */
+
+interface NavSubItem {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+}
 
 interface NavItem {
   title: string;
   icon: LucideIcon;
-  href: string;
+  href?: string; // For single links
+  subItems?: NavSubItem[]; // For dropdown menus
 }
 
-interface NavGroup {
-  title: string;
-  items: NavItem[];
-}
-
-const navGroups: NavGroup[] = [
+const navItems: NavItem[] = [
   {
-    title: "GENERAL",
-    items: [
-      { title: "General", icon: Settings, href: "/profile" },
+    title: "General",
+    icon: Settings,
+    subItems: [
+      { title: "Notices", href: "/notices", icon: Bell },
     ],
   },
   {
-    title: "FINANCE",
-    items: [
-      { title: "My Payments", icon: CreditCard, href: "/receipts" },
-      { title: "Pay Fees", icon: Wallet, href: "/pay-fees" },
+    title: "My Payments",
+    icon: CreditCard,
+    subItems: [
+      { title: "Acceptance Payments", href: "/acceptance-payments", icon: FileText },
+      { title: "Fees Payments", href: "/fees-payments", icon: Receipt },
+      { title: "My Payment Invoices", href: "/payment-invoices", icon: ClipboardList },
+      { title: "School Charge Payments", href: "/school-charge-payments", icon: Receipt },
     ],
   },
   {
-    title: "ACADEMICS",
-    items: [
-      { title: "Courses", icon: BookOpen, href: "/course-registration" },
-      { title: "E-Learning", icon: GraduationCap, href: "/e-learning" },
+    title: "Pay Fees",
+    icon: Wallet,
+    href: "/pay-fees",
+  },
+  {
+    title: "Courses",
+    icon: BookOpen,
+    subItems: [
+      { title: "Registered Courses", href: "/registered-courses", icon: ClipboardList },
+      { title: "Course Registration", href: "/course-registration", icon: BookOpen },
     ],
   },
   {
-    title: "HELP DESK",
-    items: [
-      { title: "Support", icon: HelpCircle, href: "/support" },
+    title: "E-Learning",
+    icon: GraduationCap,
+    href: "/e-learning",
+  },
+  {
+    title: "Support",
+    icon: HelpCircle,
+    subItems: [
+      { title: "Help Desk", href: "/help-desk", icon: Headphones },
+      { title: "Contact Support", href: "/contact-support", icon: MessageCircle },
     ],
   },
 ];
@@ -70,12 +99,21 @@ interface DashboardSidebarProps {
 
 const DashboardSidebar = ({ isOpen, onToggle }: DashboardSidebarProps) => {
   const location = useLocation();
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(
-    navGroups.map((g) => g.title)
-  );
+  
+  // Track which dropdowns are open
+  const [openDropdowns, setOpenDropdowns] = useState<string[]>(() => {
+    // Auto-open dropdown that contains current route
+    const activeDropdowns: string[] = [];
+    navItems.forEach((item) => {
+      if (item.subItems?.some((sub) => location.pathname === sub.href)) {
+        activeDropdowns.push(item.title);
+      }
+    });
+    return activeDropdowns;
+  });
 
-  const toggleGroup = (title: string) => {
-    setExpandedGroups((prev) =>
+  const toggleDropdown = (title: string) => {
+    setOpenDropdowns((prev) =>
       prev.includes(title)
         ? prev.filter((t) => t !== title)
         : [...prev, title]
@@ -83,6 +121,7 @@ const DashboardSidebar = ({ isOpen, onToggle }: DashboardSidebarProps) => {
   };
 
   const isActive = (href: string) => location.pathname === href;
+  const isDropdownOpen = (title: string) => openDropdowns.includes(title);
 
   return (
     <>
@@ -139,45 +178,70 @@ const DashboardSidebar = ({ isOpen, onToggle }: DashboardSidebarProps) => {
           </Link>
         </div>
 
-        {/* Navigation Groups */}
-        <nav className="px-4 space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
-          {navGroups.map((group) => (
-            <div key={group.title}>
-              {/* Group Header */}
-              <button
-                onClick={() => toggleGroup(group.title)}
-                className="flex items-center justify-between w-full px-4 py-2 text-xs 
-                           font-semibold text-primary-foreground/60 uppercase tracking-wider
-                           hover:text-primary-foreground/80 transition-colors"
-              >
-                {group.title}
-                {expandedGroups.includes(group.title) ? (
-                  <ChevronDown size={14} />
-                ) : (
-                  <ChevronRight size={14} />
-                )}
-              </button>
-
-              {/* Group Items */}
-              {expandedGroups.includes(group.title) && (
-                <div className="space-y-1 mt-1">
-                  {group.items.map((item) => (
-                    <Link
-                      key={item.title}
-                      to={item.href}
+        {/* Navigation Items */}
+        <nav className="px-4 space-y-1 overflow-y-auto max-h-[calc(100vh-200px)]">
+          {navItems.map((item) => (
+            <div key={item.title}>
+              {item.subItems ? (
+                // Dropdown Menu Item
+                <Collapsible
+                  open={isDropdownOpen(item.title)}
+                  onOpenChange={() => toggleDropdown(item.title)}
+                >
+                  <CollapsibleTrigger
+                    className={cn(
+                      "flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors",
+                      "hover:bg-primary-foreground/10 text-primary-foreground/90",
+                      isDropdownOpen(item.title) && "bg-primary-foreground/5"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon size={20} />
+                      <span className="text-sm font-medium">{item.title}</span>
+                    </div>
+                    <ChevronDown
+                      size={16}
                       className={cn(
-                        "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors",
-                        isActive(item.href)
-                          ? "bg-secondary text-secondary-foreground"
-                          : "hover:bg-primary-foreground/10 text-primary-foreground/80"
+                        "transition-transform duration-200",
+                        isDropdownOpen(item.title) && "rotate-180"
                       )}
-                    >
-                      <item.icon size={18} />
-                      <span className="text-sm">{item.title}</span>
-                      <ChevronRight size={14} className="ml-auto opacity-50" />
-                    </Link>
-                  ))}
-                </div>
+                    />
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+                    <div className="pl-4 mt-1 space-y-1">
+                      {item.subItems.map((subItem) => (
+                        <Link
+                          key={subItem.title}
+                          to={subItem.href}
+                          className={cn(
+                            "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm",
+                            isActive(subItem.href)
+                              ? "bg-secondary text-secondary-foreground"
+                              : "hover:bg-primary-foreground/10 text-primary-foreground/70"
+                          )}
+                        >
+                          <subItem.icon size={16} />
+                          <span>{subItem.title}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : (
+                // Single Link Item
+                <Link
+                  to={item.href!}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
+                    isActive(item.href!)
+                      ? "bg-secondary text-secondary-foreground"
+                      : "hover:bg-primary-foreground/10 text-primary-foreground/90"
+                  )}
+                >
+                  <item.icon size={20} />
+                  <span className="text-sm font-medium">{item.title}</span>
+                </Link>
               )}
             </div>
           ))}
