@@ -136,9 +136,9 @@ const DashboardSidebar = ({ isOpen, onToggle }: DashboardSidebarProps) => {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-full bg-primary text-primary-foreground z-50",
-          "w-64 transition-transform duration-300 ease-in-out",
-          "lg:translate-x-0 lg:static lg:z-auto",
+          "fixed left-0 top-0 h-screen bg-primary text-primary-foreground z-50",
+          "w-64 transition-transform duration-300 ease-in-out flex flex-col",
+          "lg:sticky lg:top-0 lg:translate-x-0 lg:z-auto lg:shrink-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -179,7 +179,7 @@ const DashboardSidebar = ({ isOpen, onToggle }: DashboardSidebarProps) => {
         </div>
 
         {/* Navigation Items */}
-        <nav className="px-4 space-y-1 overflow-y-auto max-h-[calc(100vh-200px)]">
+        <nav className="px-4 space-y-1 overflow-y-auto flex-1">
           {navItems.map((item) => (
             <div key={item.title}>
               {item.subItems ? (
