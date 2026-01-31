@@ -120,7 +120,7 @@ const StudentDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 flex">
+    <div className="min-h-screen bg-muted/30 flex w-full">
       {/* Sidebar */}
       <DashboardSidebar
         isOpen={sidebarOpen}
@@ -128,7 +128,7 @@ const StudentDashboard = () => {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-0">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
         {/* Header with logout in dropdown */}
         <DashboardHeader
           studentName={studentData.name}
