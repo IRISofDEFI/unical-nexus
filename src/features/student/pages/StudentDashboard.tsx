@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   DashboardSidebar,
   DashboardHeader,
@@ -113,10 +115,12 @@ const recentNews = [
 
 const StudentDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  const { signOut, profile } = useAuth();
 
-  const handleLogout = () => {
-    // In a real app, this would clear auth state
-    window.location.href = "/login";
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/login", { replace: true });
   };
 
   return (

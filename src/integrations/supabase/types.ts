@@ -79,24 +79,7 @@ export type Database = {
       }
     }
     Views: {
-      login_identifiers: {
-        Row: {
-          email: string | null
-          matric_number: string | null
-          staff_id: string | null
-        }
-        Insert: {
-          email?: string | null
-          matric_number?: string | null
-          staff_id?: string | null
-        }
-        Update: {
-          email?: string | null
-          matric_number?: string | null
-          staff_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       has_role: {

@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   Users, 
   Settings, 
@@ -18,6 +19,14 @@ import unicalLogo from "@/assets/logos/unical-logo.png";
  */
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/admin-login", { replace: true });
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Dashboard Header */}
@@ -51,13 +60,13 @@ const AdminDashboard = () => {
                   <p className="text-xs text-primary-foreground/70">Administrator</p>
                 </div>
               </div>
-              <Link 
-                to="/admin-login"
+              <button 
+                onClick={handleLogout}
                 className="p-2 hover:bg-primary-foreground/10 rounded-full"
                 title="Logout"
               >
                 <LogOut size={20} />
-              </Link>
+              </button>
             </div>
           </div>
         </div>
