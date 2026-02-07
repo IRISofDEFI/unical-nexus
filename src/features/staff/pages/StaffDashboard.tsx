@@ -1,3 +1,4 @@
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   Users, 
   FileCheck, 
@@ -158,15 +159,16 @@ const pendingTasks = [
 
 const StaffDashboard = () => {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const initials = staffData.name
     .split(" ")
     .map((n) => n[0])
     .join("")
     .slice(0, 2);
 
-  const handleLogout = () => {
-    // In a real app, this would clear auth state
-    navigate("/staff-login");
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/staff-login", { replace: true });
   };
 
   return (

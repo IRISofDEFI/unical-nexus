@@ -19,10 +19,13 @@ import StaffDashboard from "@/features/staff/pages/StaffDashboard";
 import AdminLogin from "@/features/admin/pages/AdminLogin";
 import AdminDashboard from "@/features/admin/pages/AdminDashboard";
 
+// Protected Route
+import ProtectedRoute from "@/components/shared/ProtectedRoute";
+
 /**
  * AppRoutes Component
  * Centralized routing configuration for the UNICAL portal
- * All navigation links should have corresponding routes here
+ * Dashboard routes are protected and require authentication + correct role
  */
 
 const AppRoutes = () => {
@@ -40,15 +43,36 @@ const AppRoutes = () => {
       
       {/* Student Routes */}
       <Route path="/login" element={<StudentLogin />} />
-      <Route path="/student-dashboard" element={<StudentDashboard />} />
+      <Route
+        path="/student-dashboard"
+        element={
+          <ProtectedRoute requiredRole="student">
+            <StudentDashboard />
+          </ProtectedRoute>
+        }
+      />
       
       {/* Staff Routes */}
       <Route path="/staff-login" element={<StaffLogin />} />
-      <Route path="/staff-dashboard" element={<StaffDashboard />} />
+      <Route
+        path="/staff-dashboard"
+        element={
+          <ProtectedRoute requiredRole="staff">
+            <StaffDashboard />
+          </ProtectedRoute>
+        }
+      />
       
       {/* Admin Routes */}
       <Route path="/admin-login" element={<AdminLogin />} />
-      <Route path="/admin-dashboard" element={<AdminDashboard />} />
+      <Route
+        path="/admin-dashboard"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
       
       {/* Catch-all for 404 */}
       <Route path="*" element={<NotFound />} />

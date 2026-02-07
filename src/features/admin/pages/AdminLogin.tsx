@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Shield, HelpCircle, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LoginForm from "@/components/shared/LoginForm";
 import unicalLogo from "@/assets/logos/unical-logo.png";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Admin Login Page
@@ -12,11 +14,18 @@ import unicalLogo from "@/assets/logos/unical-logo.png";
  */
 
 const AdminLogin = () => {
-  const handleLogin = (data: { identifier: string; password: string; remember: boolean }) => {
-    // Mock login - in real app, this would authenticate
-    console.log("Admin login attempt:", data);
-    // Redirect to admin dashboard for demo
-    window.location.href = "/admin-dashboard";
+  const navigate = useNavigate();
+  const { user, roles, loading } = useAuth();
+
+  // Redirect if already logged in as admin
+  useEffect(() => {
+    if (!loading && user && roles.includes("admin")) {
+      navigate("/admin-dashboard", { replace: true });
+    }
+  }, [user, roles, loading, navigate]);
+
+  const handleLoginSuccess = () => {
+    navigate("/admin-dashboard", { replace: true });
   };
 
   return (
@@ -47,8 +56,19 @@ const AdminLogin = () => {
                   </p>
                 </div>
 
+                {/* Demo Credentials */}
+                <div className="bg-muted/50 border border-border rounded-lg p-3 mb-6 text-xs">
+                  <p className="font-semibold text-foreground mb-1">Demo Credentials:</p>
+                  <p className="text-muted-foreground">
+                    Email: <span className="font-mono text-foreground">admin@unical.demo</span>
+                  </p>
+                  <p className="text-muted-foreground">
+                    Password: <span className="font-mono text-foreground">Admin@1234</span>
+                  </p>
+                </div>
+
                 {/* Login Form */}
-                <LoginForm onSubmit={handleLogin} userType="staff" />
+                <LoginForm onSuccess={handleLoginSuccess} userType="staff" />
 
                 {/* Other Login Links */}
                 <div className="mt-6 pt-6 border-t border-border text-center space-y-2">
