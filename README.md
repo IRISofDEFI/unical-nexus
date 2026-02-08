@@ -40,7 +40,21 @@ After successful login, users are seamlessly redirected to their role-specific d
 - If an unauthenticated user tries to access a protected dashboard route, they are redirected to the appropriate login page.
 - Legacy routes (`/student-dashboard`, `/staff-dashboard`, `/admin-dashboard`) automatically redirect to the new paths.
 
+### Error Handling
+
+The login form provides clean, user-friendly error messages:
+
+| Scenario | User-Facing Message |
+|----------|---------------------|
+| Wrong credentials (401/403) | "Invalid login credentials. Please check your details and try again." |
+| Missing fields (400) | "Please fill in all required fields." |
+| Server error (500) | "Something went wrong on our end. Please try again shortly." |
+| Network failure | "Unable to reach the server. Please check your internet connection and try again." |
+
+Raw backend errors and stack traces are only logged to the browser developer console — they are never shown in the UI.
+
 ---
+
 
 ## Project Structure
 

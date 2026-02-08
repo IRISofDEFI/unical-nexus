@@ -34,6 +34,49 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Parses edge function errors and returns a user-friendly message.
+   * Raw/technical errors are logged to console only.
+   */
+  const getUserFriendlyError = async (err: any): Promise<string> => {
+    // Try to extract the JSON body from edge function non-2xx responses
+    if (err?.context?.body) {
+      try {
+        const body = JSON.parse(
+          new TextDecoder().decode(
+            await new Response(err.context.body).arrayBuffer()
+          )
+        );
+        const status = err?.context?.status;
+
+        // 401/403 = invalid credentials
+        if (status === 401 || status === 403) {
+          return "Invalid login credentials. Please check your details and try again.";
+        }
+        // 400 = missing fields
+        if (status === 400) {
+          return body.error || "Please fill in all required fields.";
+        }
+        // Any other server error with a message
+        console.error("Server error:", body.error);
+        return "Something went wrong on our end. Please try again shortly.";
+      } catch {
+        // Body wasn't valid JSON – fall through to generic message
+      }
+    }
+
+    // Network failures (offline, DNS, timeout)
+    if (
+      err?.message?.includes("Failed to fetch") ||
+      err?.message?.includes("NetworkError") ||
+      err?.message?.includes("network")
+    ) {
+      return "Unable to reach the server. Please check your internet connection and try again.";
+    }
+
+    return "Something went wrong. Please try again.";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -46,11 +89,17 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
       });
 
       if (fnError) {
-        throw new Error(fnError.message || "Login failed");
+        // fnError from supabase.functions.invoke wraps non-2xx responses
+        console.error("Edge function error:", fnError);
+        const friendlyMsg = await getUserFriendlyError(fnError);
+        setError(friendlyMsg);
+        setIsLoading(false);
+        return;
       }
 
       if (data?.error) {
-        setError(data.error);
+        // Server returned 200 but with an error field (shouldn't happen normally)
+        setError("Invalid login credentials. Please check your details and try again.");
         setIsLoading(false);
         return;
       }
@@ -68,19 +117,8 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
       }
     } catch (err: any) {
       console.error("Login error:", err);
-      // Try to parse error body from edge function
-      if (err?.context?.body) {
-        try {
-          const body = JSON.parse(new TextDecoder().decode(
-            await new Response(err.context.body).arrayBuffer()
-          ));
-          setError(body.error || "Login failed. Please try again.");
-        } catch {
-          setError("Login failed. Please try again.");
-        }
-      } else {
-        setError(err.message || "Login failed. Please try again.");
-      }
+      const friendlyMsg = await getUserFriendlyError(err);
+      setError(friendlyMsg);
     } finally {
       setIsLoading(false);
     }
