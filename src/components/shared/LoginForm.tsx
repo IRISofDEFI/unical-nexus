@@ -106,7 +106,7 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
           htmlFor="identifier" 
           className="block text-sm font-medium text-foreground mb-2"
         >
-          {userType === "student" ? "Student Identifier" : "Staff Identifier"}
+          {userType === "student" ? "Student Matric" : "Staff ID"}
         </label>
         <input
           type="text"

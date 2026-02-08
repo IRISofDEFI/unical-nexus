@@ -165,10 +165,10 @@ const DashboardSidebar = ({ isOpen, onToggle }: DashboardSidebarProps) => {
         {/* Dashboard Link */}
         <div className="p-4">
           <Link
-            to="/student-dashboard"
+            to="/student/dashboard"
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
-              isActive("/student-dashboard")
+              isActive("/student/dashboard")
                 ? "bg-secondary text-secondary-foreground"
                 : "hover:bg-primary-foreground/10"
             )}

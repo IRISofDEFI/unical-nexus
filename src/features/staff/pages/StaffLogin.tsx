@@ -41,15 +41,15 @@ const StaffLogin = () => {
   const navigate = useNavigate();
   const { user, roles, loading } = useAuth();
 
-  // Redirect if already logged in as staff
+   // Redirect if already logged in as staff
   useEffect(() => {
     if (!loading && user && roles.includes("staff")) {
-      navigate("/staff-dashboard", { replace: true });
+      navigate("/staff/dashboard", { replace: true });
     }
   }, [user, roles, loading, navigate]);
 
   const handleLoginSuccess = () => {
-    navigate("/staff-dashboard", { replace: true });
+    navigate("/staff/dashboard", { replace: true });
   };
 
   return (
@@ -77,17 +77,6 @@ const StaffLogin = () => {
                   </h1>
                   <p className="text-muted-foreground text-sm mt-2">
                     Access your administrative dashboard
-                  </p>
-                </div>
-
-                {/* Demo Credentials */}
-                <div className="bg-muted/50 border border-border rounded-lg p-3 mb-6 text-xs">
-                  <p className="font-semibold text-foreground mb-1">Demo Credentials:</p>
-                  <p className="text-muted-foreground">
-                    Staff ID: <span className="font-mono text-foreground">STF/2015/001234</span>
-                  </p>
-                  <p className="text-muted-foreground">
-                    Password: <span className="font-mono text-foreground">Staff@1234</span>
                   </p>
                 </div>
 

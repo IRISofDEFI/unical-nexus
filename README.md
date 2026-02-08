@@ -1,243 +1,68 @@
+# UNICAL University Portal
 
-# Folder Restructuring Plan
-
-## Overview
-Reorganize the project into clear, role-based folder structures for **Student**, **Staff**, and **Admin** portals. This will make the codebase more maintainable and scalable as each portal grows.
+The University of Calabar online portal — a role-based academic management system built with React, TypeScript, Tailwind CSS, and Lovable Cloud.
 
 ---
 
-## Current Structure (Before)
+## Demo Login Credentials
 
-```text
-src/
-├── components/
-│   ├── dashboard/          # Mixed - currently used by Student only
-│   │   ├── ActivityCard.tsx
-│   │   ├── CalendarCard.tsx
-│   │   ├── DashboardHeader.tsx
-│   │   ├── DashboardSidebar.tsx
-│   │   ├── NewsCard.tsx
-│   │   ├── ProfileCard.tsx
-│   │   ├── StatsRow.tsx
-│   │   └── index.ts
-│   ├── DashboardCard.tsx   # Used by Staff
-│   └── LoginForm.tsx       # Shared
-├── pages/
-│   ├── Login.tsx           # Student login
-│   ├── StaffLogin.tsx      # Staff login
-│   ├── StudentDashboard.tsx
-│   └── StaffDashboard.tsx
-└── routes/
-    └── AppRoutes.tsx
+Use the following credentials to test each portal:
+
+| Role    | Identifier           | Password      | Login URL      |
+|---------|----------------------|---------------|----------------|
+| Student | `22/071145217`       | `Demo@1234`   | `/login`       |
+| Staff   | `STF/2015/001234`    | `Staff@1234`  | `/staff-login` |
+| Admin   | `admin@unical.demo`  | `Admin@1234`  | `/admin-login` |
+
+---
+
+## Authentication
+
+Authentication is powered by Lovable Cloud (Supabase Auth) with a custom login flow:
+
+1. **User enters credentials** — Students use their Matric Number, Staff use their Staff ID (or email for admins).
+2. **Identifier resolution** — A secure backend function maps non-email identifiers (Matric No / Staff ID) to the corresponding user email using service-role permissions. This keeps email addresses hidden from the client.
+3. **Authentication** — The backend function authenticates the user against the auth system and returns a session token.
+4. **Session persistence** — The session is set in the client and managed via `AuthProvider`, which listens for auth state changes and loads the user's profile and roles.
+5. **Role-based access** — Roles (`student`, `staff`, `admin`) are stored in a dedicated `user_roles` table. Route guards (`ProtectedRoute`) ensure users can only access dashboards matching their role.
+
+### Role-Based Redirects
+
+After successful login, users are seamlessly redirected to their role-specific dashboard:
+
+| Role    | Dashboard Route       |
+|---------|-----------------------|
+| Student | `/student/dashboard`  |
+| Staff   | `/staff/dashboard`    |
+| Admin   | `/admin/dashboard`    |
+
+- If a logged-in user visits `/`, `/login`, `/staff-login`, or `/admin-login`, they are automatically redirected to their dashboard.
+- If an unauthenticated user tries to access a protected dashboard route, they are redirected to the appropriate login page.
+- Legacy routes (`/student-dashboard`, `/staff-dashboard`, `/admin-dashboard`) automatically redirect to the new paths.
+
+---
+
+## Project Structure
+
 ```
-
----
-
-## New Structure (After)
-
-```text
 src/
-├── components/
-│   ├── shared/             # Shared components across all portals
-│   │   ├── LoginForm.tsx
-│   │   ├── DashboardCard.tsx
-│   │   └── index.ts
-│   ├── ui/                 # UI primitives (unchanged)
-│   └── ... (Navbar, Footer, etc.)
-│
+├── components/         # Shared UI components (Navbar, Footer, LoginForm, etc.)
+├── contexts/           # AuthContext for global auth state
 ├── features/
-│   ├── student/            # All student-related code
-│   │   ├── components/
-│   │   │   ├── ActivityCard.tsx
-│   │   │   ├── CalendarCard.tsx
-│   │   │   ├── DashboardHeader.tsx
-│   │   │   ├── DashboardSidebar.tsx
-│   │   │   ├── NewsCard.tsx
-│   │   │   ├── ProfileCard.tsx
-│   │   │   ├── StatsRow.tsx
-│   │   │   └── index.ts
-│   │   ├── pages/
-│   │   │   ├── StudentLogin.tsx
-│   │   │   └── StudentDashboard.tsx
-│   │   └── index.ts
-│   │
-│   ├── staff/              # All staff-related code
-│   │   ├── components/
-│   │   │   └── index.ts    # Ready for future components
-│   │   ├── pages/
-│   │   │   ├── StaffLogin.tsx
-│   │   │   └── StaffDashboard.tsx
-│   │   └── index.ts
-│   │
-│   └── admin/              # All admin-related code (prepared)
-│       ├── components/
-│       │   └── index.ts    # Ready for future components
-│       ├── pages/
-│       │   ├── AdminLogin.tsx     # Placeholder
-│       │   └── AdminDashboard.tsx # Placeholder
-│       └── index.ts
-│
-├── pages/                  # Public/general pages only
-│   ├── Home.tsx
-│   ├── Academics.tsx
-│   ├── Articles.tsx
-│   ├── ArticleDetail.tsx
-│   └── NotFound.tsx
-│
-└── routes/
-    └── AppRoutes.tsx       # Updated imports
+│   ├── student/        # Student login page, dashboard, and components
+│   ├── staff/          # Staff login page, dashboard, and components
+│   └── admin/          # Admin login page, dashboard, and components
+├── pages/              # Public pages (Home, Academics, Articles)
+└── routes/             # Centralized routing with role guards
 ```
 
 ---
 
-## Implementation Steps
+## Getting Started
 
-### Step 1: Create Folder Structure
-Create the new `features/` directory with subfolders for each role:
-- `src/features/student/components/`
-- `src/features/student/pages/`
-- `src/features/staff/components/`
-- `src/features/staff/pages/`
-- `src/features/admin/components/`
-- `src/features/admin/pages/`
+This project is built and deployed via [Lovable](https://lovable.dev). To run locally, clone the repo and install dependencies:
 
-### Step 2: Move Student Files
-Move existing student-related files:
-
-| From | To |
-|------|-----|
-| `src/components/dashboard/ActivityCard.tsx` | `src/features/student/components/ActivityCard.tsx` |
-| `src/components/dashboard/CalendarCard.tsx` | `src/features/student/components/CalendarCard.tsx` |
-| `src/components/dashboard/DashboardHeader.tsx` | `src/features/student/components/DashboardHeader.tsx` |
-| `src/components/dashboard/DashboardSidebar.tsx` | `src/features/student/components/DashboardSidebar.tsx` |
-| `src/components/dashboard/NewsCard.tsx` | `src/features/student/components/NewsCard.tsx` |
-| `src/components/dashboard/ProfileCard.tsx` | `src/features/student/components/ProfileCard.tsx` |
-| `src/components/dashboard/StatsRow.tsx` | `src/features/student/components/StatsRow.tsx` |
-| `src/pages/Login.tsx` | `src/features/student/pages/StudentLogin.tsx` |
-| `src/pages/StudentDashboard.tsx` | `src/features/student/pages/StudentDashboard.tsx` |
-
-### Step 3: Move Staff Files
-Move existing staff-related files:
-
-| From | To |
-|------|-----|
-| `src/pages/StaffLogin.tsx` | `src/features/staff/pages/StaffLogin.tsx` |
-| `src/pages/StaffDashboard.tsx` | `src/features/staff/pages/StaffDashboard.tsx` |
-
-### Step 4: Create Shared Components Folder
-Move shared components:
-
-| From | To |
-|------|-----|
-| `src/components/LoginForm.tsx` | `src/components/shared/LoginForm.tsx` |
-| `src/components/DashboardCard.tsx` | `src/components/shared/DashboardCard.tsx` |
-
-### Step 5: Create Admin Placeholder Files
-Create placeholder files for the admin portal:
-- `src/features/admin/pages/AdminLogin.tsx` - Basic login page
-- `src/features/admin/pages/AdminDashboard.tsx` - Placeholder dashboard
-- `src/features/admin/components/index.ts` - Empty export file
-
-### Step 6: Create Index Files
-Create barrel export files for clean imports:
-- `src/features/student/components/index.ts`
-- `src/features/student/index.ts`
-- `src/features/staff/components/index.ts`
-- `src/features/staff/index.ts`
-- `src/features/admin/components/index.ts`
-- `src/features/admin/index.ts`
-- `src/components/shared/index.ts`
-
-### Step 7: Update Routes
-Update `AppRoutes.tsx` with new import paths:
-
-```typescript
-// Student imports
-import StudentLogin from "@/features/student/pages/StudentLogin";
-import StudentDashboard from "@/features/student/pages/StudentDashboard";
-
-// Staff imports  
-import StaffLogin from "@/features/staff/pages/StaffLogin";
-import StaffDashboard from "@/features/staff/pages/StaffDashboard";
-
-// Admin imports
-import AdminLogin from "@/features/admin/pages/AdminLogin";
-import AdminDashboard from "@/features/admin/pages/AdminDashboard";
+```bash
+npm install
+npm run dev
 ```
-
-Add admin routes:
-```typescript
-{/* Admin Routes */}
-<Route path="/admin-login" element={<AdminLogin />} />
-<Route path="/admin-dashboard" element={<AdminDashboard />} />
-```
-
-### Step 8: Update Internal Imports
-Fix all internal imports in moved files:
-- Student components: Update imports from `@/components/dashboard/...` to relative imports
-- Login pages: Update imports from `@/components/LoginForm` to `@/components/shared/LoginForm`
-- Staff Dashboard: Update import for `DashboardCard`
-
-### Step 9: Clean Up Old Folders
-Remove the now-empty `src/components/dashboard/` folder after migration.
-
----
-
-## Files Summary
-
-### Files to Create (New)
-| File | Purpose |
-|------|---------|
-| `src/features/student/components/index.ts` | Student component exports |
-| `src/features/student/index.ts` | Student feature exports |
-| `src/features/staff/components/index.ts` | Staff component exports |
-| `src/features/staff/index.ts` | Staff feature exports |
-| `src/features/admin/components/index.ts` | Admin component exports |
-| `src/features/admin/pages/AdminLogin.tsx` | Admin login placeholder |
-| `src/features/admin/pages/AdminDashboard.tsx` | Admin dashboard placeholder |
-| `src/features/admin/index.ts` | Admin feature exports |
-| `src/components/shared/index.ts` | Shared component exports |
-
-### Files to Move and Update
-| Original Location | New Location |
-|-------------------|--------------|
-| `src/components/dashboard/*` (7 files) | `src/features/student/components/` |
-| `src/pages/Login.tsx` | `src/features/student/pages/StudentLogin.tsx` |
-| `src/pages/StudentDashboard.tsx` | `src/features/student/pages/StudentDashboard.tsx` |
-| `src/pages/StaffLogin.tsx` | `src/features/staff/pages/StaffLogin.tsx` |
-| `src/pages/StaffDashboard.tsx` | `src/features/staff/pages/StaffDashboard.tsx` |
-| `src/components/LoginForm.tsx` | `src/components/shared/LoginForm.tsx` |
-| `src/components/DashboardCard.tsx` | `src/components/shared/DashboardCard.tsx` |
-
-### Files to Update
-| File | Changes |
-|------|---------|
-| `src/routes/AppRoutes.tsx` | Update all imports, add admin routes |
-| All moved component files | Update internal import paths |
-
----
-
-## Route Structure After Changes
-
-| Route | Page | Location |
-|-------|------|----------|
-| `/` | Home | `src/pages/Home.tsx` |
-| `/login` | Student Login | `src/features/student/pages/StudentLogin.tsx` |
-| `/student-dashboard` | Student Dashboard | `src/features/student/pages/StudentDashboard.tsx` |
-| `/staff-login` | Staff Login | `src/features/staff/pages/StaffLogin.tsx` |
-| `/staff-dashboard` | Staff Dashboard | `src/features/staff/pages/StaffDashboard.tsx` |
-| `/admin-login` | Admin Login | `src/features/admin/pages/AdminLogin.tsx` |
-| `/admin-dashboard` | Admin Dashboard | `src/features/admin/pages/AdminDashboard.tsx` |
-| `/academics` | Academics | `src/pages/Academics.tsx` |
-| `/articles` | Articles | `src/pages/Articles.tsx` |
-| `/articles/:id` | Article Detail | `src/pages/ArticleDetail.tsx` |
-
----
-
-## Technical Notes
-
-- All existing functionality will be preserved
-- Import paths will use the `@/` alias consistently
-- Index files enable cleaner imports like `import { ProfileCard } from "@/features/student/components"`
-- The admin folder is prepared with placeholder content, ready for your instructions
-- No changes to styling or component logic, only file organization and imports
