@@ -42,9 +42,9 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
   if (!roles.includes(requiredRole)) {
     // User is logged in but doesn't have the required role
     // Redirect to their appropriate dashboard or login
-    if (roles.includes("student")) return <Navigate to="/student-dashboard" replace />;
-    if (roles.includes("staff")) return <Navigate to="/staff-dashboard" replace />;
-    if (roles.includes("admin")) return <Navigate to="/admin-dashboard" replace />;
+    if (roles.includes("admin")) return <Navigate to="/admin/dashboard" replace />;
+    if (roles.includes("staff")) return <Navigate to="/staff/dashboard" replace />;
+    if (roles.includes("student")) return <Navigate to="/student/dashboard" replace />;
     return <Navigate to="/" replace />;
   }
 

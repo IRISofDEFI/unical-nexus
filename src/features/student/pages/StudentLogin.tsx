@@ -41,15 +41,15 @@ const StudentLogin = () => {
   const navigate = useNavigate();
   const { user, roles, loading } = useAuth();
 
-  // Redirect if already logged in as student
+   // Redirect if already logged in as student
   useEffect(() => {
     if (!loading && user && roles.includes("student")) {
-      navigate("/student-dashboard", { replace: true });
+      navigate("/student/dashboard", { replace: true });
     }
   }, [user, roles, loading, navigate]);
 
   const handleLoginSuccess = () => {
-    navigate("/student-dashboard", { replace: true });
+    navigate("/student/dashboard", { replace: true });
   };
 
   return (
@@ -77,17 +77,6 @@ const StudentLogin = () => {
                   </h1>
                   <p className="text-muted-foreground text-sm mt-2">
                     Access your academic dashboard
-                  </p>
-                </div>
-
-                {/* Demo Credentials */}
-                <div className="bg-muted/50 border border-border rounded-lg p-3 mb-6 text-xs">
-                  <p className="font-semibold text-foreground mb-1">Demo Credentials:</p>
-                  <p className="text-muted-foreground">
-                    Matric No: <span className="font-mono text-foreground">22/071145217</span>
-                  </p>
-                  <p className="text-muted-foreground">
-                    Password: <span className="font-mono text-foreground">Demo@1234</span>
                   </p>
                 </div>
 

@@ -20,12 +20,12 @@ const AdminLogin = () => {
   // Redirect if already logged in as admin
   useEffect(() => {
     if (!loading && user && roles.includes("admin")) {
-      navigate("/admin-dashboard", { replace: true });
+      navigate("/admin/dashboard", { replace: true });
     }
   }, [user, roles, loading, navigate]);
 
   const handleLoginSuccess = () => {
-    navigate("/admin-dashboard", { replace: true });
+    navigate("/admin/dashboard", { replace: true });
   };
 
   return (
@@ -53,17 +53,6 @@ const AdminLogin = () => {
                   </h1>
                   <p className="text-muted-foreground text-sm mt-2">
                     Access administrative controls
-                  </p>
-                </div>
-
-                {/* Demo Credentials */}
-                <div className="bg-muted/50 border border-border rounded-lg p-3 mb-6 text-xs">
-                  <p className="font-semibold text-foreground mb-1">Demo Credentials:</p>
-                  <p className="text-muted-foreground">
-                    Email: <span className="font-mono text-foreground">admin@unical.demo</span>
-                  </p>
-                  <p className="text-muted-foreground">
-                    Password: <span className="font-mono text-foreground">Admin@1234</span>
                   </p>
                 </div>
 
