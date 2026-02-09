@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { RedirectIfAuthenticated } from "./RedirectIfAuthenticated";
 
 // Public Pages
 import Home from "@/pages/Home";
@@ -8,137 +8,127 @@ import Articles from "@/pages/Articles";
 import ArticleDetail from "@/pages/ArticleDetail";
 import NotFound from "@/pages/NotFound";
 
-// Student Feature
+// Login Pages
 import StudentLogin from "@/features/student/pages/StudentLogin";
 import StudentDashboard from "@/features/student/pages/StudentDashboard";
-
-// Staff Feature
 import StaffLogin from "@/features/staff/pages/StaffLogin";
 import StaffDashboard from "@/features/staff/pages/StaffDashboard";
-
-// Admin Feature
 import AdminLogin from "@/features/admin/pages/AdminLogin";
+
+// Admin Pages
 import AdminDashboard from "@/features/admin/pages/AdminDashboard";
+import AddDepartment from "@/features/admin/pages/departments/AddDepartment";
+import EditDepartment from "@/features/admin/pages/departments/EditDepartment";
+import ViewDepartments from "@/features/admin/pages/departments/ViewDepartments";
+import AddProgramme from "@/features/admin/pages/programmes/AddProgramme";
+import EditProgramme from "@/features/admin/pages/programmes/EditProgramme";
+import ViewProgrammes from "@/features/admin/pages/programmes/ViewProgrammes";
+import AddCourse from "@/features/admin/pages/courses/AddCourse";
+import EditCourse from "@/features/admin/pages/courses/EditCourse";
+import ViewCourses from "@/features/admin/pages/courses/ViewCourses";
+import UploadCourses from "@/features/admin/pages/courses/UploadCourses";
+import PrescribedCourses from "@/features/admin/pages/courses/PrescribedCourses";
+import Attendance from "@/features/admin/pages/courses/Attendance";
+import PassMark from "@/features/admin/pages/courses/PassMark";
+import Allocation from "@/features/admin/pages/courses/Allocation";
+import UploadResults from "@/features/admin/pages/results/UploadResults";
+import ViewResults from "@/features/admin/pages/results/ViewResults";
+import ResultReports from "@/features/admin/pages/results/ResultReports";
+import DownloadResults from "@/features/admin/pages/results/DownloadResults";
+import UploadStudents from "@/features/admin/pages/students/UploadStudents";
+import ViewStudents from "@/features/admin/pages/students/ViewStudents";
+import StudentProfile from "@/features/admin/pages/students/StudentProfile";
+import WithdrawStudent from "@/features/admin/pages/students/WithdrawStudent";
+import StartSession from "@/features/admin/pages/session/StartSession";
+import Semester from "@/features/admin/pages/session/Semester";
+import OpenRegistration from "@/features/admin/pages/session/OpenRegistration";
+import CloseRegistration from "@/features/admin/pages/session/CloseRegistration";
+import AddFeeItem from "@/features/admin/pages/fees/AddFeeItem";
+import ViewFeeItems from "@/features/admin/pages/fees/ViewFeeItems";
+import FacultyCharges from "@/features/admin/pages/fees/FacultyCharges";
+import ExtraCharges from "@/features/admin/pages/fees/ExtraCharges";
+import Payments from "@/features/admin/pages/fees/Payments";
+import Transactions from "@/features/admin/pages/fees/Transactions";
+import Lecturers from "@/features/admin/pages/users/Lecturers";
+import FacultyOfficers from "@/features/admin/pages/users/FacultyOfficers";
+import Assignments from "@/features/admin/pages/users/Assignments";
+import ViewUsers from "@/features/admin/pages/users/ViewUsers";
+import Reports from "@/features/admin/pages/reports/Reports";
 
 // Protected Route
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
 
 /**
- * RedirectIfAuthenticated
- * Redirects logged-in users to their role-specific dashboard
+ * AppRoutes
+ * Centralized routing with mock auth guards.
  */
-const RedirectIfAuthenticated = ({ children }: { children: React.ReactNode }) => {
-  const { user, roles, loading } = useAuth();
+const AppRoutes = () => (
+  <Routes>
+    {/* Public */}
+    <Route path="/" element={<RedirectIfAuthenticated><Home /></RedirectIfAuthenticated>} />
+    <Route path="/academics" element={<Academics />} />
+    <Route path="/articles" element={<Articles />} />
+    <Route path="/articles/:id" element={<ArticleDetail />} />
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+    {/* Login routes */}
+    <Route path="/login" element={<RedirectIfAuthenticated><StudentLogin /></RedirectIfAuthenticated>} />
+    <Route path="/staff-login" element={<RedirectIfAuthenticated><StaffLogin /></RedirectIfAuthenticated>} />
+    <Route path="/admin-login" element={<RedirectIfAuthenticated><AdminLogin /></RedirectIfAuthenticated>} />
 
-  if (user && roles.length > 0) {
-    if (roles.includes("admin")) return <Navigate to="/admin/dashboard" replace />;
-    if (roles.includes("staff")) return <Navigate to="/staff/dashboard" replace />;
-    if (roles.includes("student")) return <Navigate to="/student/dashboard" replace />;
-  }
+    {/* Student */}
+    <Route path="/student/dashboard" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
 
-  return <>{children}</>;
-};
+    {/* Staff */}
+    <Route path="/staff/dashboard" element={<ProtectedRoute requiredRole="staff"><StaffDashboard /></ProtectedRoute>} />
 
-/**
- * AppRoutes Component
- * Centralized routing configuration for the UNICAL portal
- * - Login and home routes redirect authenticated users to their dashboard
- * - Dashboard routes are protected and require authentication + correct role
- */
-const AppRoutes = () => {
-  return (
-    <Routes>
-      {/* Public Routes - redirect if already logged in */}
-      <Route
-        path="/"
-        element={
-          <RedirectIfAuthenticated>
-            <Home />
-          </RedirectIfAuthenticated>
-        }
-      />
+    {/* Admin */}
+    <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+    <Route path="/admin/departments/add" element={<ProtectedRoute requiredRole="admin"><AddDepartment /></ProtectedRoute>} />
+    <Route path="/admin/departments/edit" element={<ProtectedRoute requiredRole="admin"><EditDepartment /></ProtectedRoute>} />
+    <Route path="/admin/departments/view" element={<ProtectedRoute requiredRole="admin"><ViewDepartments /></ProtectedRoute>} />
+    <Route path="/admin/programmes/add" element={<ProtectedRoute requiredRole="admin"><AddProgramme /></ProtectedRoute>} />
+    <Route path="/admin/programmes/edit" element={<ProtectedRoute requiredRole="admin"><EditProgramme /></ProtectedRoute>} />
+    <Route path="/admin/programmes/view" element={<ProtectedRoute requiredRole="admin"><ViewProgrammes /></ProtectedRoute>} />
+    <Route path="/admin/courses/add" element={<ProtectedRoute requiredRole="admin"><AddCourse /></ProtectedRoute>} />
+    <Route path="/admin/courses/edit" element={<ProtectedRoute requiredRole="admin"><EditCourse /></ProtectedRoute>} />
+    <Route path="/admin/courses/view" element={<ProtectedRoute requiredRole="admin"><ViewCourses /></ProtectedRoute>} />
+    <Route path="/admin/courses/upload" element={<ProtectedRoute requiredRole="admin"><UploadCourses /></ProtectedRoute>} />
+    <Route path="/admin/courses/prescribed" element={<ProtectedRoute requiredRole="admin"><PrescribedCourses /></ProtectedRoute>} />
+    <Route path="/admin/courses/attendance" element={<ProtectedRoute requiredRole="admin"><Attendance /></ProtectedRoute>} />
+    <Route path="/admin/courses/pass-mark" element={<ProtectedRoute requiredRole="admin"><PassMark /></ProtectedRoute>} />
+    <Route path="/admin/courses/allocation" element={<ProtectedRoute requiredRole="admin"><Allocation /></ProtectedRoute>} />
+    <Route path="/admin/results/upload" element={<ProtectedRoute requiredRole="admin"><UploadResults /></ProtectedRoute>} />
+    <Route path="/admin/results/view" element={<ProtectedRoute requiredRole="admin"><ViewResults /></ProtectedRoute>} />
+    <Route path="/admin/results/reports" element={<ProtectedRoute requiredRole="admin"><ResultReports /></ProtectedRoute>} />
+    <Route path="/admin/results/download" element={<ProtectedRoute requiredRole="admin"><DownloadResults /></ProtectedRoute>} />
+    <Route path="/admin/students/upload" element={<ProtectedRoute requiredRole="admin"><UploadStudents /></ProtectedRoute>} />
+    <Route path="/admin/students/view" element={<ProtectedRoute requiredRole="admin"><ViewStudents /></ProtectedRoute>} />
+    <Route path="/admin/students/profile" element={<ProtectedRoute requiredRole="admin"><StudentProfile /></ProtectedRoute>} />
+    <Route path="/admin/students/withdraw" element={<ProtectedRoute requiredRole="admin"><WithdrawStudent /></ProtectedRoute>} />
+    <Route path="/admin/session/start" element={<ProtectedRoute requiredRole="admin"><StartSession /></ProtectedRoute>} />
+    <Route path="/admin/session/semester" element={<ProtectedRoute requiredRole="admin"><Semester /></ProtectedRoute>} />
+    <Route path="/admin/session/open-reg" element={<ProtectedRoute requiredRole="admin"><OpenRegistration /></ProtectedRoute>} />
+    <Route path="/admin/session/close-reg" element={<ProtectedRoute requiredRole="admin"><CloseRegistration /></ProtectedRoute>} />
+    <Route path="/admin/fees/add-item" element={<ProtectedRoute requiredRole="admin"><AddFeeItem /></ProtectedRoute>} />
+    <Route path="/admin/fees/view-items" element={<ProtectedRoute requiredRole="admin"><ViewFeeItems /></ProtectedRoute>} />
+    <Route path="/admin/fees/faculty-charges" element={<ProtectedRoute requiredRole="admin"><FacultyCharges /></ProtectedRoute>} />
+    <Route path="/admin/fees/extra-charges" element={<ProtectedRoute requiredRole="admin"><ExtraCharges /></ProtectedRoute>} />
+    <Route path="/admin/fees/payments" element={<ProtectedRoute requiredRole="admin"><Payments /></ProtectedRoute>} />
+    <Route path="/admin/fees/transactions" element={<ProtectedRoute requiredRole="admin"><Transactions /></ProtectedRoute>} />
+    <Route path="/admin/users/lecturers" element={<ProtectedRoute requiredRole="admin"><Lecturers /></ProtectedRoute>} />
+    <Route path="/admin/users/faculty-officers" element={<ProtectedRoute requiredRole="admin"><FacultyOfficers /></ProtectedRoute>} />
+    <Route path="/admin/users/assignments" element={<ProtectedRoute requiredRole="admin"><Assignments /></ProtectedRoute>} />
+    <Route path="/admin/users/view" element={<ProtectedRoute requiredRole="admin"><ViewUsers /></ProtectedRoute>} />
+    <Route path="/admin/reports" element={<ProtectedRoute requiredRole="admin"><Reports /></ProtectedRoute>} />
 
-      {/* Academic Pages */}
-      <Route path="/academics" element={<Academics />} />
+    {/* Legacy redirects */}
+    <Route path="/student-dashboard" element={<Navigate to="/student/dashboard" replace />} />
+    <Route path="/staff-dashboard" element={<Navigate to="/staff/dashboard" replace />} />
+    <Route path="/admin-dashboard" element={<Navigate to="/admin/dashboard" replace />} />
 
-      {/* Articles/News */}
-      <Route path="/articles" element={<Articles />} />
-      <Route path="/articles/:id" element={<ArticleDetail />} />
-
-      {/* Student Routes */}
-      <Route
-        path="/login"
-        element={
-          <RedirectIfAuthenticated>
-            <StudentLogin />
-          </RedirectIfAuthenticated>
-        }
-      />
-      <Route
-        path="/student/dashboard"
-        element={
-          <ProtectedRoute requiredRole="student">
-            <StudentDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Staff Routes */}
-      <Route
-        path="/staff-login"
-        element={
-          <RedirectIfAuthenticated>
-            <StaffLogin />
-          </RedirectIfAuthenticated>
-        }
-      />
-      <Route
-        path="/staff/dashboard"
-        element={
-          <ProtectedRoute requiredRole="staff">
-            <StaffDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Admin Routes */}
-      <Route
-        path="/admin-login"
-        element={
-          <RedirectIfAuthenticated>
-            <AdminLogin />
-          </RedirectIfAuthenticated>
-        }
-      />
-      <Route
-        path="/admin/dashboard"
-        element={
-          <ProtectedRoute requiredRole="admin">
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Legacy route redirects */}
-      <Route path="/student-dashboard" element={<Navigate to="/student/dashboard" replace />} />
-      <Route path="/staff-dashboard" element={<Navigate to="/staff/dashboard" replace />} />
-      <Route path="/admin-dashboard" element={<Navigate to="/admin/dashboard" replace />} />
-
-      {/* Catch-all for 404 */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
-};
+    {/* 404 */}
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
 
 export default AppRoutes;
