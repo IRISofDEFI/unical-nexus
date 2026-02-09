@@ -1,32 +1,22 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff, LogIn, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * LoginForm Component
  * 
- * Real authentication form that connects to Lovable Cloud.
- * 
- * How authentication works:
- * 1. User enters their identifier (matric no, staff ID, or email) + password
- * 2. The form calls the `resolve-login` edge function
- * 3. The edge function resolves non-email identifiers to emails using the profiles table
- * 4. It then authenticates via the auth system and returns a session
- * 5. The session is set in the client, triggering the AuthContext to update
- * 6. The login page detects the auth state change and redirects to the dashboard
- * 
- * Credentials are stored in the auth system with bcrypt-hashed passwords.
- * Profile data (matric_number, staff_id, etc.) is in the profiles table.
- * Roles are stored separately in the user_roles table.
+ * Mock authentication form (frontend-only).
+ * Real backend auth will be handled by a separate Python service later.
  */
 
 interface LoginFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (role: string) => void;
   userType?: "student" | "staff";
 }
 
 const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
+  const { signIn } = useAuth();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -34,91 +24,16 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  /**
-   * Parses edge function errors and returns a user-friendly message.
-   * Raw/technical errors are logged to console only.
-   */
-  const getUserFriendlyError = async (err: any): Promise<string> => {
-    // Try to extract the JSON body from edge function non-2xx responses
-    if (err?.context?.body) {
-      try {
-        const body = JSON.parse(
-          new TextDecoder().decode(
-            await new Response(err.context.body).arrayBuffer()
-          )
-        );
-        const status = err?.context?.status;
-
-        // 401/403 = invalid credentials
-        if (status === 401 || status === 403) {
-          return "Invalid login credentials. Please check your details and try again.";
-        }
-        // 400 = missing fields
-        if (status === 400) {
-          return body.error || "Please fill in all required fields.";
-        }
-        // Any other server error with a message
-        console.error("Server error:", body.error);
-        return "Something went wrong on our end. Please try again shortly.";
-      } catch {
-        // Body wasn't valid JSON – fall through to generic message
-      }
-    }
-
-    // Network failures (offline, DNS, timeout)
-    if (
-      err?.message?.includes("Failed to fetch") ||
-      err?.message?.includes("NetworkError") ||
-      err?.message?.includes("network")
-    ) {
-      return "Unable to reach the server. Please check your internet connection and try again.";
-    }
-
-    return "Something went wrong. Please try again.";
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
     try {
-      // Call the resolve-login edge function
-      const { data, error: fnError } = await supabase.functions.invoke("resolve-login", {
-        body: { identifier: identifier.trim(), password },
-      });
-
-      if (fnError) {
-        // fnError from supabase.functions.invoke wraps non-2xx responses
-        console.error("Edge function error:", fnError);
-        const friendlyMsg = await getUserFriendlyError(fnError);
-        setError(friendlyMsg);
-        setIsLoading(false);
-        return;
-      }
-
-      if (data?.error) {
-        // Server returned 200 but with an error field (shouldn't happen normally)
-        setError("Invalid login credentials. Please check your details and try again.");
-        setIsLoading(false);
-        return;
-      }
-
-      if (data?.session) {
-        // Set the session in the Supabase client
-        await supabase.auth.setSession({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token,
-        });
-
-        onSuccess?.();
-      } else {
-        setError("Login failed. Please try again.");
-      }
+      const { role } = await signIn(identifier.trim(), password);
+      onSuccess?.(role);
     } catch (err: any) {
-      console.error("Login error:", err);
-      const friendlyMsg = await getUserFriendlyError(err);
-      setError(friendlyMsg);
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +45,6 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Error Message */}
       {error && (
         <div className="bg-destructive/10 border border-destructive/20 text-destructive 
                         rounded-lg p-3 text-sm">
@@ -138,12 +52,8 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
         </div>
       )}
 
-      {/* Identifier Input */}
       <div>
-        <label 
-          htmlFor="identifier" 
-          className="block text-sm font-medium text-foreground mb-2"
-        >
+        <label htmlFor="identifier" className="block text-sm font-medium text-foreground mb-2">
           {userType === "student" ? "Student Matric" : "Staff ID"}
         </label>
         <input
@@ -158,12 +68,8 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
         />
       </div>
 
-      {/* Password Input */}
       <div>
-        <label 
-          htmlFor="password" 
-          className="block text-sm font-medium text-foreground mb-2"
-        >
+        <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
           Password
         </label>
         <div className="relative">
@@ -189,27 +95,21 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
         </div>
       </div>
 
-      {/* Remember Me & Forgot Password */}
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
             checked={remember}
             onChange={(e) => setRemember(e.target.checked)}
-            className="w-4 h-4 rounded border-border text-secondary 
-                       focus:ring-secondary/20"
+            className="w-4 h-4 rounded border-border text-secondary focus:ring-secondary/20"
           />
           <span className="text-sm text-muted-foreground">Remember me</span>
         </label>
-        <Link 
-          to="/forgot-password" 
-          className="text-sm text-secondary hover:underline"
-        >
+        <Link to="/forgot-password" className="text-sm text-secondary hover:underline">
           Forgot password?
         </Link>
       </div>
 
-      {/* Submit Button */}
       <button
         type="submit"
         disabled={isLoading}
@@ -229,16 +129,10 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
         )}
       </button>
 
-      {/* Register Link (for students) */}
       {userType === "student" && (
         <div className="text-center pt-4 border-t border-border">
-          <p className="text-sm text-muted-foreground mb-2">
-            New or returning student?
-          </p>
-          <Link 
-            to="/register" 
-            className="text-secondary font-medium hover:underline"
-          >
+          <p className="text-sm text-muted-foreground mb-2">New or returning student?</p>
+          <Link to="/register" className="text-secondary font-medium hover:underline">
             Register / Continue Registration
           </Link>
         </div>

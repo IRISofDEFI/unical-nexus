@@ -1,21 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { createContext, useContext, useState, ReactNode } from "react";
 
 /**
- * Authentication Context
+ * Mock Authentication Context
  * 
- * Provides real authentication state throughout the app using Lovable Cloud.
- * 
- * How it works:
- * 1. On mount, sets up an auth state listener and checks for existing sessions
- * 2. When a user logs in, their session and profile are loaded
- * 3. Roles are fetched from the user_roles table
- * 
- * Login flow:
- * - The LoginForm calls the resolve-login edge function
- * - That function resolves matric/staff_id to email, then authenticates
- * - On success, the session is set in Supabase client which triggers onAuthStateChange
+ * Frontend-only mock auth for development.
+ * Backend auth will be handled by a separate Python service later.
  */
 
 type AppRole = "student" | "staff" | "admin";
@@ -31,106 +20,92 @@ interface UserProfile {
   phone?: string | null;
 }
 
+interface MockUser {
+  id: string;
+  email: string;
+}
+
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: MockUser | null;
   profile: UserProfile | null;
   roles: AppRole[];
   loading: boolean;
+  signIn: (identifier: string, password: string) => Promise<{ role: AppRole }>;
   signOut: () => Promise<void>;
 }
 
+// Demo accounts for mock auth
+const MOCK_ACCOUNTS: Record<string, { password: string; role: AppRole; profile: UserProfile }> = {
+  "22/071145217": {
+    password: "Demo@1234",
+    role: "student",
+    profile: {
+      display_name: "Adebayo Okonkwo",
+      email: "adebayo@student.unical.edu.ng",
+      matric_number: "22/071145217",
+      department: "Computer Science",
+      faculty: "Faculty of Science",
+      level: "400",
+    },
+  },
+  "STF/2015/001234": {
+    password: "Staff@1234",
+    role: "staff",
+    profile: {
+      display_name: "Dr. Amaka Okonkwo",
+      email: "a.okonkwo@unical.edu.ng",
+      staff_id: "STF/2015/001234",
+      department: "Computer Science",
+      faculty: "Faculty of Science",
+    },
+  },
+  "admin@unical.demo": {
+    password: "Admin@1234",
+    role: "admin",
+    profile: {
+      display_name: "System Administrator",
+      email: "admin@unical.demo",
+      department: "ICT",
+    },
+  },
+};
+
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  session: null,
   profile: null,
   roles: [],
-  loading: true,
+  loading: false,
+  signIn: async () => ({ role: "student" }),
   signOut: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<MockUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          // Defer profile/role fetching to avoid deadlock
-          setTimeout(() => {
-            fetchProfileAndRoles(session.user.id);
-          }, 0);
-        } else {
-          setProfile(null);
-          setRoles([]);
-          setLoading(false);
-        }
-      }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfileAndRoles(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const fetchProfileAndRoles = async (userId: string) => {
-    try {
-      // Fetch profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("display_name, email, matric_number, staff_id, department, faculty, level, phone")
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (profileData) {
-        setProfile(profileData);
-      }
-
-      // Fetch roles
-      const { data: rolesData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId);
-
-      if (rolesData) {
-        setRoles(rolesData.map((r) => r.role));
-      }
-    } catch (err) {
-      console.error("Error fetching profile/roles:", err);
-    } finally {
-      setLoading(false);
+  const signIn = async (identifier: string, password: string): Promise<{ role: AppRole }> => {
+    const account = MOCK_ACCOUNTS[identifier.trim()];
+    if (!account || account.password !== password) {
+      throw new Error("Invalid login credentials. Please check your details and try again.");
     }
+
+    setUser({ id: "mock-" + account.role, email: account.profile.email });
+    setProfile(account.profile);
+    setRoles([account.role]);
+    return { role: account.role };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
     setUser(null);
-    setSession(null);
     setProfile(null);
     setRoles([]);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, roles, loading, signOut }}>
+    <AuthContext.Provider value={{ user, profile, roles, loading: false, signOut, signIn }}>
       {children}
     </AuthContext.Provider>
   );

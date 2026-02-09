@@ -24,8 +24,10 @@ const AdminLogin = () => {
     }
   }, [user, roles, loading, navigate]);
 
-  const handleLoginSuccess = () => {
-    navigate("/admin/dashboard", { replace: true });
+  const handleLoginSuccess = (role: string) => {
+    if (role === "admin") navigate("/admin/dashboard", { replace: true });
+    else if (role === "staff") navigate("/staff/dashboard", { replace: true });
+    else navigate("/student/dashboard", { replace: true });
   };
 
   return (
