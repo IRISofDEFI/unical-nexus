@@ -4,10 +4,8 @@ import { Eye, EyeOff, LogIn, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 /**
- * LoginForm Component
- * 
- * Mock authentication form (frontend-only).
- * Real backend auth will be handled by a separate Python service later.
+ * LoginForm – Frontend-only mock login.
+ * Any email + password succeeds. No API calls.
  */
 
 interface LoginFormProps {
@@ -21,37 +19,28 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
+  const role = userType === "staff" ? "staff" : "student";
 
-    try {
-      const { role } = await signIn(identifier.trim(), password);
-      onSuccess?.(role);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
-    } finally {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    // Simulate a brief delay for UX
+    setTimeout(() => {
+      signIn(identifier.trim(), password, role as any);
       setIsLoading(false);
-    }
+      onSuccess?.(role);
+    }, 300);
   };
 
-  const placeholderText = userType === "student" 
-    ? "Matric No. / JAMB Reg. No. / Email"
-    : "Staff ID / Email Address";
+  const placeholderText =
+    userType === "student"
+      ? "Matric No. / JAMB Reg. No. / Email"
+      : "Staff ID / Email Address";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {error && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive 
-                        rounded-lg p-3 text-sm">
-          {error}
-        </div>
-      )}
-
       <div>
         <label htmlFor="identifier" className="block text-sm font-medium text-foreground mb-2">
           {userType === "student" ? "Student Matric" : "Staff ID"}
@@ -86,8 +75,7 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground 
-                       hover:text-foreground transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -113,8 +101,7 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full btn-secondary flex items-center justify-center gap-2 
-                   disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full btn-secondary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading ? (
           <>

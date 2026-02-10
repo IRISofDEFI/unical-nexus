@@ -166,8 +166,8 @@ const StaffDashboard = () => {
     .join("")
     .slice(0, 2);
 
-  const handleLogout = async () => {
-    await signOut();
+  const handleLogout = () => {
+    signOut();
     navigate("/staff-login", { replace: true });
   };
 

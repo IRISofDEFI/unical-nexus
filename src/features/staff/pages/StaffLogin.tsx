@@ -39,19 +39,16 @@ const staffServices = [
 
 const StaffLogin = () => {
   const navigate = useNavigate();
-  const { user, roles, loading } = useAuth();
+  const { user, loading } = useAuth();
 
-   // Redirect if already logged in as staff
   useEffect(() => {
-    if (!loading && user && roles.includes("staff")) {
+    if (!loading && user) {
       navigate("/staff/dashboard", { replace: true });
     }
-  }, [user, roles, loading, navigate]);
+  }, [user, loading, navigate]);
 
-  const handleLoginSuccess = (role: string) => {
-    if (role === "admin") navigate("/admin/dashboard", { replace: true });
-    else if (role === "staff") navigate("/staff/dashboard", { replace: true });
-    else navigate("/student/dashboard", { replace: true });
+  const handleLoginSuccess = () => {
+    navigate("/staff/dashboard", { replace: true });
   };
 
   return (
