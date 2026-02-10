@@ -1,7 +1,0 @@
-project_id = "dlgwxdvarxqvohczmdcy"
-
-[functions.resolve-login]
-verify_jwt = false
-
-[functions.seed-demo-users]
-verify_jwt = false
