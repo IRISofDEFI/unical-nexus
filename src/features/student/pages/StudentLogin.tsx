@@ -39,19 +39,16 @@ const portalServices = [
 
 const StudentLogin = () => {
   const navigate = useNavigate();
-  const { user, roles, loading } = useAuth();
+  const { user, loading } = useAuth();
 
-   // Redirect if already logged in as student
   useEffect(() => {
-    if (!loading && user && roles.includes("student")) {
+    if (!loading && user) {
       navigate("/student/dashboard", { replace: true });
     }
-  }, [user, roles, loading, navigate]);
+  }, [user, loading, navigate]);
 
-  const handleLoginSuccess = (role: string) => {
-    if (role === "admin") navigate("/admin/dashboard", { replace: true });
-    else if (role === "staff") navigate("/staff/dashboard", { replace: true });
-    else navigate("/student/dashboard", { replace: true });
+  const handleLoginSuccess = () => {
+    navigate("/student/dashboard", { replace: true });
   };
 
   return (

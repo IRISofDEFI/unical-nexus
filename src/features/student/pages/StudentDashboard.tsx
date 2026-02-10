@@ -116,10 +116,10 @@ const recentNews = [
 const StudentDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
-  const { signOut, profile } = useAuth();
+  const { signOut } = useAuth();
 
-  const handleLogout = async () => {
-    await signOut();
+  const handleLogout = () => {
+    signOut();
     navigate("/login", { replace: true });
   };
 

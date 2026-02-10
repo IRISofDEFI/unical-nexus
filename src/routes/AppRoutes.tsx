@@ -59,8 +59,7 @@ import Reports from "@/features/admin/pages/reports/Reports";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
 
 /**
- * AppRoutes
- * Centralized routing with mock auth guards.
+ * AppRoutes – No admin links in public nav; /admin is a hidden route.
  */
 const AppRoutes = () => (
   <Routes>
@@ -76,50 +75,51 @@ const AppRoutes = () => (
     <Route path="/admin-login" element={<RedirectIfAuthenticated><AdminLogin /></RedirectIfAuthenticated>} />
 
     {/* Student */}
-    <Route path="/student/dashboard" element={<ProtectedRoute requiredRole="student"><StudentDashboard /></ProtectedRoute>} />
+    <Route path="/student/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
 
     {/* Staff */}
-    <Route path="/staff/dashboard" element={<ProtectedRoute requiredRole="staff"><StaffDashboard /></ProtectedRoute>} />
+    <Route path="/staff/dashboard" element={<ProtectedRoute><StaffDashboard /></ProtectedRoute>} />
 
-    {/* Admin */}
-    <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
-    <Route path="/admin/departments/add" element={<ProtectedRoute requiredRole="admin"><AddDepartment /></ProtectedRoute>} />
-    <Route path="/admin/departments/edit" element={<ProtectedRoute requiredRole="admin"><EditDepartment /></ProtectedRoute>} />
-    <Route path="/admin/departments/view" element={<ProtectedRoute requiredRole="admin"><ViewDepartments /></ProtectedRoute>} />
-    <Route path="/admin/programmes/add" element={<ProtectedRoute requiredRole="admin"><AddProgramme /></ProtectedRoute>} />
-    <Route path="/admin/programmes/edit" element={<ProtectedRoute requiredRole="admin"><EditProgramme /></ProtectedRoute>} />
-    <Route path="/admin/programmes/view" element={<ProtectedRoute requiredRole="admin"><ViewProgrammes /></ProtectedRoute>} />
-    <Route path="/admin/courses/add" element={<ProtectedRoute requiredRole="admin"><AddCourse /></ProtectedRoute>} />
-    <Route path="/admin/courses/edit" element={<ProtectedRoute requiredRole="admin"><EditCourse /></ProtectedRoute>} />
-    <Route path="/admin/courses/view" element={<ProtectedRoute requiredRole="admin"><ViewCourses /></ProtectedRoute>} />
-    <Route path="/admin/courses/upload" element={<ProtectedRoute requiredRole="admin"><UploadCourses /></ProtectedRoute>} />
-    <Route path="/admin/courses/prescribed" element={<ProtectedRoute requiredRole="admin"><PrescribedCourses /></ProtectedRoute>} />
-    <Route path="/admin/courses/attendance" element={<ProtectedRoute requiredRole="admin"><Attendance /></ProtectedRoute>} />
-    <Route path="/admin/courses/pass-mark" element={<ProtectedRoute requiredRole="admin"><PassMark /></ProtectedRoute>} />
-    <Route path="/admin/courses/allocation" element={<ProtectedRoute requiredRole="admin"><Allocation /></ProtectedRoute>} />
-    <Route path="/admin/results/upload" element={<ProtectedRoute requiredRole="admin"><UploadResults /></ProtectedRoute>} />
-    <Route path="/admin/results/view" element={<ProtectedRoute requiredRole="admin"><ViewResults /></ProtectedRoute>} />
-    <Route path="/admin/results/reports" element={<ProtectedRoute requiredRole="admin"><ResultReports /></ProtectedRoute>} />
-    <Route path="/admin/results/download" element={<ProtectedRoute requiredRole="admin"><DownloadResults /></ProtectedRoute>} />
-    <Route path="/admin/students/upload" element={<ProtectedRoute requiredRole="admin"><UploadStudents /></ProtectedRoute>} />
-    <Route path="/admin/students/view" element={<ProtectedRoute requiredRole="admin"><ViewStudents /></ProtectedRoute>} />
-    <Route path="/admin/students/profile" element={<ProtectedRoute requiredRole="admin"><StudentProfile /></ProtectedRoute>} />
-    <Route path="/admin/students/withdraw" element={<ProtectedRoute requiredRole="admin"><WithdrawStudent /></ProtectedRoute>} />
-    <Route path="/admin/session/start" element={<ProtectedRoute requiredRole="admin"><StartSession /></ProtectedRoute>} />
-    <Route path="/admin/session/semester" element={<ProtectedRoute requiredRole="admin"><Semester /></ProtectedRoute>} />
-    <Route path="/admin/session/open-reg" element={<ProtectedRoute requiredRole="admin"><OpenRegistration /></ProtectedRoute>} />
-    <Route path="/admin/session/close-reg" element={<ProtectedRoute requiredRole="admin"><CloseRegistration /></ProtectedRoute>} />
-    <Route path="/admin/fees/add-item" element={<ProtectedRoute requiredRole="admin"><AddFeeItem /></ProtectedRoute>} />
-    <Route path="/admin/fees/view-items" element={<ProtectedRoute requiredRole="admin"><ViewFeeItems /></ProtectedRoute>} />
-    <Route path="/admin/fees/faculty-charges" element={<ProtectedRoute requiredRole="admin"><FacultyCharges /></ProtectedRoute>} />
-    <Route path="/admin/fees/extra-charges" element={<ProtectedRoute requiredRole="admin"><ExtraCharges /></ProtectedRoute>} />
-    <Route path="/admin/fees/payments" element={<ProtectedRoute requiredRole="admin"><Payments /></ProtectedRoute>} />
-    <Route path="/admin/fees/transactions" element={<ProtectedRoute requiredRole="admin"><Transactions /></ProtectedRoute>} />
-    <Route path="/admin/users/lecturers" element={<ProtectedRoute requiredRole="admin"><Lecturers /></ProtectedRoute>} />
-    <Route path="/admin/users/faculty-officers" element={<ProtectedRoute requiredRole="admin"><FacultyOfficers /></ProtectedRoute>} />
-    <Route path="/admin/users/assignments" element={<ProtectedRoute requiredRole="admin"><Assignments /></ProtectedRoute>} />
-    <Route path="/admin/users/view" element={<ProtectedRoute requiredRole="admin"><ViewUsers /></ProtectedRoute>} />
-    <Route path="/admin/reports" element={<ProtectedRoute requiredRole="admin"><Reports /></ProtectedRoute>} />
+    {/* Admin (hidden – no public links) */}
+    <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+    <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+    <Route path="/admin/departments/add" element={<ProtectedRoute><AddDepartment /></ProtectedRoute>} />
+    <Route path="/admin/departments/edit" element={<ProtectedRoute><EditDepartment /></ProtectedRoute>} />
+    <Route path="/admin/departments/view" element={<ProtectedRoute><ViewDepartments /></ProtectedRoute>} />
+    <Route path="/admin/programmes/add" element={<ProtectedRoute><AddProgramme /></ProtectedRoute>} />
+    <Route path="/admin/programmes/edit" element={<ProtectedRoute><EditProgramme /></ProtectedRoute>} />
+    <Route path="/admin/programmes/view" element={<ProtectedRoute><ViewProgrammes /></ProtectedRoute>} />
+    <Route path="/admin/courses/add" element={<ProtectedRoute><AddCourse /></ProtectedRoute>} />
+    <Route path="/admin/courses/edit" element={<ProtectedRoute><EditCourse /></ProtectedRoute>} />
+    <Route path="/admin/courses/view" element={<ProtectedRoute><ViewCourses /></ProtectedRoute>} />
+    <Route path="/admin/courses/upload" element={<ProtectedRoute><UploadCourses /></ProtectedRoute>} />
+    <Route path="/admin/courses/prescribed" element={<ProtectedRoute><PrescribedCourses /></ProtectedRoute>} />
+    <Route path="/admin/courses/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} />
+    <Route path="/admin/courses/pass-mark" element={<ProtectedRoute><PassMark /></ProtectedRoute>} />
+    <Route path="/admin/courses/allocation" element={<ProtectedRoute><Allocation /></ProtectedRoute>} />
+    <Route path="/admin/results/upload" element={<ProtectedRoute><UploadResults /></ProtectedRoute>} />
+    <Route path="/admin/results/view" element={<ProtectedRoute><ViewResults /></ProtectedRoute>} />
+    <Route path="/admin/results/reports" element={<ProtectedRoute><ResultReports /></ProtectedRoute>} />
+    <Route path="/admin/results/download" element={<ProtectedRoute><DownloadResults /></ProtectedRoute>} />
+    <Route path="/admin/students/upload" element={<ProtectedRoute><UploadStudents /></ProtectedRoute>} />
+    <Route path="/admin/students/view" element={<ProtectedRoute><ViewStudents /></ProtectedRoute>} />
+    <Route path="/admin/students/profile" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
+    <Route path="/admin/students/withdraw" element={<ProtectedRoute><WithdrawStudent /></ProtectedRoute>} />
+    <Route path="/admin/session/start" element={<ProtectedRoute><StartSession /></ProtectedRoute>} />
+    <Route path="/admin/session/semester" element={<ProtectedRoute><Semester /></ProtectedRoute>} />
+    <Route path="/admin/session/open-reg" element={<ProtectedRoute><OpenRegistration /></ProtectedRoute>} />
+    <Route path="/admin/session/close-reg" element={<ProtectedRoute><CloseRegistration /></ProtectedRoute>} />
+    <Route path="/admin/fees/add-item" element={<ProtectedRoute><AddFeeItem /></ProtectedRoute>} />
+    <Route path="/admin/fees/view-items" element={<ProtectedRoute><ViewFeeItems /></ProtectedRoute>} />
+    <Route path="/admin/fees/faculty-charges" element={<ProtectedRoute><FacultyCharges /></ProtectedRoute>} />
+    <Route path="/admin/fees/extra-charges" element={<ProtectedRoute><ExtraCharges /></ProtectedRoute>} />
+    <Route path="/admin/fees/payments" element={<ProtectedRoute><Payments /></ProtectedRoute>} />
+    <Route path="/admin/fees/transactions" element={<ProtectedRoute><Transactions /></ProtectedRoute>} />
+    <Route path="/admin/users/lecturers" element={<ProtectedRoute><Lecturers /></ProtectedRoute>} />
+    <Route path="/admin/users/faculty-officers" element={<ProtectedRoute><FacultyOfficers /></ProtectedRoute>} />
+    <Route path="/admin/users/assignments" element={<ProtectedRoute><Assignments /></ProtectedRoute>} />
+    <Route path="/admin/users/view" element={<ProtectedRoute><ViewUsers /></ProtectedRoute>} />
+    <Route path="/admin/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
 
     {/* Legacy redirects */}
     <Route path="/student-dashboard" element={<Navigate to="/student/dashboard" replace />} />

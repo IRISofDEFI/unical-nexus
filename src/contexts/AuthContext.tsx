@@ -1,111 +1,71 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 /**
- * Mock Authentication Context
+ * Mock Authentication Context (Frontend-Only)
  * 
- * Frontend-only mock auth for development.
+ * Any email + password logs in successfully.
+ * Persists mock user in localStorage for session continuity.
  * Backend auth will be handled by a separate Python service later.
  */
 
 type AppRole = "student" | "staff" | "admin";
 
-interface UserProfile {
-  display_name: string;
-  email: string;
-  matric_number?: string | null;
-  staff_id?: string | null;
-  department?: string | null;
-  faculty?: string | null;
-  level?: string | null;
-  phone?: string | null;
-}
-
 interface MockUser {
   id: string;
   email: string;
+  role: AppRole;
 }
 
 interface AuthContextType {
   user: MockUser | null;
-  profile: UserProfile | null;
-  roles: AppRole[];
   loading: boolean;
-  signIn: (identifier: string, password: string) => Promise<{ role: AppRole }>;
-  signOut: () => Promise<void>;
+  signIn: (email: string, password: string, role?: AppRole) => void;
+  signOut: () => void;
 }
 
-// Demo accounts for mock auth
-const MOCK_ACCOUNTS: Record<string, { password: string; role: AppRole; profile: UserProfile }> = {
-  "22/071145217": {
-    password: "Demo@1234",
-    role: "student",
-    profile: {
-      display_name: "Adebayo Okonkwo",
-      email: "adebayo@student.unical.edu.ng",
-      matric_number: "22/071145217",
-      department: "Computer Science",
-      faculty: "Faculty of Science",
-      level: "400",
-    },
-  },
-  "STF/2015/001234": {
-    password: "Staff@1234",
-    role: "staff",
-    profile: {
-      display_name: "Dr. Amaka Okonkwo",
-      email: "a.okonkwo@unical.edu.ng",
-      staff_id: "STF/2015/001234",
-      department: "Computer Science",
-      faculty: "Faculty of Science",
-    },
-  },
-  "admin@unical.demo": {
-    password: "Admin@1234",
-    role: "admin",
-    profile: {
-      display_name: "System Administrator",
-      email: "admin@unical.demo",
-      department: "ICT",
-    },
-  },
-};
+const STORAGE_KEY = "unical_mock_user";
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  profile: null,
-  roles: [],
-  loading: false,
-  signIn: async () => ({ role: "student" }),
-  signOut: async () => {},
+  loading: true,
+  signIn: () => {},
+  signOut: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<MockUser | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [roles, setRoles] = useState<AppRole[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const signIn = async (identifier: string, password: string): Promise<{ role: AppRole }> => {
-    const account = MOCK_ACCOUNTS[identifier.trim()];
-    if (!account || account.password !== password) {
-      throw new Error("Invalid login credentials. Please check your details and try again.");
+  // Restore session from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) setUser(JSON.parse(stored));
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
     }
+    setLoading(false);
+  }, []);
 
-    setUser({ id: "mock-" + account.role, email: account.profile.email });
-    setProfile(account.profile);
-    setRoles([account.role]);
-    return { role: account.role };
+  const signIn = (email: string, _password: string, role: AppRole = "admin") => {
+    const mockUser: MockUser = {
+      id: "mock-" + Date.now(),
+      email: email.trim(),
+      role,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(mockUser));
+    setUser(mockUser);
   };
 
-  const signOut = async () => {
+  const signOut = () => {
+    localStorage.removeItem(STORAGE_KEY);
     setUser(null);
-    setProfile(null);
-    setRoles([]);
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, roles, loading: false, signOut, signIn }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
