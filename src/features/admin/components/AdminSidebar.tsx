@@ -71,30 +71,35 @@ const navGroups: NavGroup[] = [
     items: [
       { title: "Dashboard", icon: Home, href: "/admin/dashboard" },
       {
-        title: "Departments",
+        title: "Faculty",
+        icon: Building2,
+        subItems: [
+          { title: "Add Faculty", href: "/admin/faculty/add", icon: Plus },
+          { title: "View / Edit Faculties", href: "/admin/faculty/view-edit", icon: Eye },
+        ],
+      },
+      {
+        title: "Department",
         icon: Building2,
         subItems: [
           { title: "Add Department", href: "/admin/departments/add", icon: Plus },
-          { title: "Edit Department", href: "/admin/departments/edit", icon: Edit },
-          { title: "View Departments", href: "/admin/departments/view", icon: Eye },
+          { title: "View / Edit Departments", href: "/admin/departments/view-edit", icon: Eye },
         ],
       },
       {
-        title: "Programmes",
+        title: "Programme",
         icon: GraduationCap,
         subItems: [
           { title: "Add Programme", href: "/admin/programmes/add", icon: Plus },
-          { title: "Edit Programme", href: "/admin/programmes/edit", icon: Edit },
-          { title: "View Programmes", href: "/admin/programmes/view", icon: Eye },
+          { title: "View / Edit Programmes", href: "/admin/programmes/view-edit", icon: Eye },
         ],
       },
       {
-        title: "Courses",
+        title: "Course",
         icon: BookOpen,
         subItems: [
           { title: "Add Course", href: "/admin/courses/add", icon: Plus },
-          { title: "Edit Course", href: "/admin/courses/edit", icon: Edit },
-          { title: "View Courses", href: "/admin/courses/view", icon: Eye },
+          { title: "View / Edit Courses", href: "/admin/courses/view-edit", icon: Eye },
           { title: "Upload Courses", href: "/admin/courses/upload", icon: Upload },
           { title: "Prescribed Courses", href: "/admin/courses/prescribed", icon: ListChecks },
           { title: "Attendance", href: "/admin/courses/attendance", icon: ClipboardList },
@@ -117,7 +122,7 @@ const navGroups: NavGroup[] = [
         icon: UsersIcon,
         subItems: [
           { title: "Upload List", href: "/admin/students/upload", icon: Upload },
-          { title: "View Students", href: "/admin/students/view", icon: Eye },
+          { title: "View / Edit Students", href: "/admin/students/view-edit", icon: Eye },
           { title: "Student Profile", href: "/admin/students/profile", icon: FileText },
           { title: "Withdraw Student", href: "/admin/students/withdraw", icon: UserMinus },
         ],
@@ -142,7 +147,7 @@ const navGroups: NavGroup[] = [
         icon: DollarSign,
         subItems: [
           { title: "Add Fee Item", href: "/admin/fees/add-item", icon: Plus },
-          { title: "View Fee Items", href: "/admin/fees/view-items", icon: Eye },
+          { title: "View / Edit Fee Items", href: "/admin/fees/view-edit-items", icon: Eye },
           { title: "Faculty Charges", href: "/admin/fees/faculty-charges", icon: Receipt },
           { title: "Extra Charges", href: "/admin/fees/extra-charges", icon: CreditCard },
           { title: "Payments", href: "/admin/fees/payments", icon: DollarSign },
@@ -156,7 +161,7 @@ const navGroups: NavGroup[] = [
           { title: "Lecturers", href: "/admin/users/lecturers", icon: Briefcase },
           { title: "Faculty Officers", href: "/admin/users/faculty-officers", icon: UsersIcon },
           { title: "Assignments", href: "/admin/users/assignments", icon: ClipboardList },
-          { title: "View Users", href: "/admin/users/view", icon: Eye },
+          { title: "View / Edit Users", href: "/admin/users/view-edit", icon: Eye },
         ],
       },
     ],
