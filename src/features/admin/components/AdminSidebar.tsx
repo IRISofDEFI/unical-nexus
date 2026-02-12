@@ -75,7 +75,7 @@ const navGroups: NavGroup[] = [
         icon: Building2,
         subItems: [
           { title: "Add Faculty", href: "/admin/faculty/add", icon: Plus },
-          { title: "View / Edit Faculties", href: "/admin/faculty/view-edit", icon: Eye },
+          { title: "View / Edit Faculties", href: "/admin/faculty/view", icon: Eye },
         ],
       },
       {

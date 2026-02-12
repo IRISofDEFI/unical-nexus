@@ -80,7 +80,7 @@ const AppRoutes = () => (
     <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
     <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
     <Route path="/admin/faculty/add" element={<ProtectedRoute><AddFaculty /></ProtectedRoute>} />
-    <Route path="/admin/faculty/view-edit" element={<ProtectedRoute><ViewEditFaculties /></ProtectedRoute>} />
+    <Route path="/admin/faculty/view" element={<ProtectedRoute><ViewEditFaculties /></ProtectedRoute>} />
     <Route path="/admin/departments/add" element={<ProtectedRoute><AddDepartment /></ProtectedRoute>} />
     <Route path="/admin/departments/view-edit" element={<ProtectedRoute><ViewEditDepartments /></ProtectedRoute>} />
     <Route path="/admin/programmes/add" element={<ProtectedRoute><AddProgramme /></ProtectedRoute>} />
