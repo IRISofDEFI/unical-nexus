@@ -75,7 +75,7 @@ const Footer = () => {
                   <Link 
                     to={link.path}
                     className="text-primary-foreground/80 hover:text-white 
-                               transition-colors text-sm"
+                              transition-colors text-sm"
                   >
                     {link.name}
                   </Link>
@@ -95,7 +95,7 @@ const Footer = () => {
                   <Link 
                     to={link.path}
                     className="text-primary-foreground/80 hover:text-white 
-                               transition-colors text-sm"
+                              transition-colors text-sm"
                   >
                     {link.name}
                   </Link>
