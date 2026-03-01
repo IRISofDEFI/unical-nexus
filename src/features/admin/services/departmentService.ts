@@ -2,10 +2,20 @@
  * Department Service Layer
  *
  * Async functions that call the Supabase backend.
- * A backend developer can swap the implementation for any REST/GraphQL API.
+ * Uses dynamic import to avoid crashing the app if Supabase env vars are missing.
  */
 
-import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+let _supabase: SupabaseClient | null = null;
+
+async function getSupabase() {
+  if (!_supabase) {
+    const mod = await import("@/integrations/supabase/client");
+    _supabase = mod.supabase;
+  }
+  return _supabase;
+}
 
 export interface Department {
   id: string;
@@ -33,6 +43,7 @@ export interface FacultyOption {
 // --------------- Public API ---------------
 
 export async function getFaculties(): Promise<FacultyOption[]> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("faculties")
     .select("id, name")
@@ -42,6 +53,7 @@ export async function getFaculties(): Promise<FacultyOption[]> {
 }
 
 export async function getDepartments(): Promise<Department[]> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("departments")
     .select("id, name, faculty_id, created_at, faculties(name)")
@@ -57,6 +69,7 @@ export async function getDepartments(): Promise<Department[]> {
 }
 
 export async function createDepartment(payload: CreateDepartmentPayload): Promise<Department> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("departments")
     .insert({ name: payload.name, faculty_id: payload.faculty_id })
@@ -67,6 +80,7 @@ export async function createDepartment(payload: CreateDepartmentPayload): Promis
 }
 
 export async function updateDepartment(id: string, payload: UpdateDepartmentPayload): Promise<Department> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("departments")
     .update(payload)
@@ -78,6 +92,7 @@ export async function updateDepartment(id: string, payload: UpdateDepartmentPayl
 }
 
 export async function deleteDepartment(id: string): Promise<void> {
+  const supabase = await getSupabase();
   const { error } = await supabase.from("departments").delete().eq("id", id);
   if (error) throw error;
 }
