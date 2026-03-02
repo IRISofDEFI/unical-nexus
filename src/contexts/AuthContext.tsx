@@ -1,12 +1,13 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 /**
- * Mock Authentication Context (Frontend-Only)
+ * Authentication Context
  * 
- * Any email + password logs in successfully.
- * Persists mock user in localStorage for session continuity.
- * Backend auth will be handled by a separate Python service later.
+ * Connects to the backend API for user authentication.
+ * Persists user session in localStorage.
  */
+
+const API_BASE_URL = "https://unical-nexus-backend.onrender.com/api";
 
 type AppRole = "student" | "staff" | "admin";
 
@@ -19,7 +20,7 @@ interface MockUser {
 interface AuthContextType {
   user: MockUser | null;
   loading: boolean;
-  signIn: (email: string, password: string, role?: AppRole) => void;
+  signIn: (identifier: string, password: string, role?: AppRole) => Promise<void>;
   signOut: () => void;
 }
 
@@ -28,7 +29,7 @@ const STORAGE_KEY = "unical_mock_user";
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  signIn: () => {},
+  signIn: async () => {},
   signOut: () => {},
 });
 
@@ -49,18 +50,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  const signIn = (email: string, _password: string, role: AppRole = "admin") => {
-    const mockUser: MockUser = {
-      id: "mock-" + Date.now(),
-      email: email.trim(),
-      role,
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(mockUser));
-    setUser(mockUser);
+  const signIn = async (identifier: string, password: string, role: AppRole = "admin") => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // Backend expects 'username', not 'identifier'
+        body: JSON.stringify({ username: identifier, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Invalid login credentials");
+      }
+
+      const data = await response.json();
+      
+      // Store JWT tokens
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("refresh_token", data.refresh_token);
+
+      // Map backend response to frontend user object
+      // Backend returns role in uppercase (e.g., 'STUDENT'), frontend uses lowercase
+      const user: MockUser = {
+        id: String(data.user_id),
+        email: data.full_name || identifier, 
+        role: (data.user_role?.toLowerCase() as AppRole) || role 
+      }; 
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+      setUser(user);
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
   };
 
   const signOut = () => {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
     setUser(null);
   };
 

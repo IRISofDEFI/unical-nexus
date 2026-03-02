@@ -2,7 +2,15 @@
  * Department Service Layer
  */
 
-const API_BASE_URL = "https://unical-nexus-backend.onrender.com";
+const API_BASE_URL = "https://unical-nexus-backend.onrender.com/api";
+
+const getHeaders = () => {
+  const token = localStorage.getItem("access_token");
+  return {
+    "Content-Type": "application/json",
+    "Authorization": token ? `Bearer ${token}` : "",
+  };
+};
 
 export interface Department {
   id: string;
@@ -30,7 +38,7 @@ export interface FacultyOption {
 // --------------- Public API ---------------
 
 export async function getFaculties(): Promise<FacultyOption[]> {
-  const response = await fetch(`${API_BASE_URL}/faculties`);
+  const response = await fetch(`${API_BASE_URL}/faculties/`, { headers: getHeaders() });
   if (!response.ok) {
     throw new Error("Failed to fetch faculties");
   }
@@ -38,7 +46,7 @@ export async function getFaculties(): Promise<FacultyOption[]> {
 }
 
 export async function getDepartments(): Promise<Department[]> {
-  const response = await fetch(`${API_BASE_URL}/departments`);
+  const response = await fetch(`${API_BASE_URL}/departments/`, { headers: getHeaders() });
   if (!response.ok) {
     throw new Error("Failed to fetch departments");
   }
@@ -46,11 +54,9 @@ export async function getDepartments(): Promise<Department[]> {
 }
 
 export async function createDepartment(payload: CreateDepartmentPayload): Promise<Department> {
-  const response = await fetch(`${API_BASE_URL}/departments`, {
+  const response = await fetch(`${API_BASE_URL}/departments/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getHeaders(),
     body: JSON.stringify(payload),
   });
 
@@ -61,11 +67,9 @@ export async function createDepartment(payload: CreateDepartmentPayload): Promis
 }
 
 export async function updateDepartment(id: string, payload: UpdateDepartmentPayload): Promise<Department> {
-  const response = await fetch(`${API_BASE_URL}/departments/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/departments/${id}/`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getHeaders(),
     body: JSON.stringify(payload),
   });
 
@@ -76,8 +80,9 @@ export async function updateDepartment(id: string, payload: UpdateDepartmentPayl
 }
 
 export async function deleteDepartment(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/departments/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/departments/${id}/`, {
     method: "DELETE",
+    headers: getHeaders(),
   });
 
   if (!response.ok) {

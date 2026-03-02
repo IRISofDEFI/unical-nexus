@@ -23,15 +23,17 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
 
   const role = userType === "staff" ? "staff" : "student";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate a brief delay for UX
-    setTimeout(() => {
-      signIn(identifier.trim(), password, role as any);
-      setIsLoading(false);
+    try {
+      await signIn(identifier.trim(), password, role as any);
       onSuccess?.(role);
-    }, 300);
+    } catch (error) {
+      alert("Login failed. Please check your credentials.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const placeholderText =

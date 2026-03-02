@@ -2,7 +2,15 @@
  * Faculty Service Layer
  */
 
-const API_BASE_URL = "https://unical-nexus-backend.onrender.com";
+const API_BASE_URL = "https://unical-nexus-backend.onrender.com/api";
+
+const getHeaders = () => {
+  const token = localStorage.getItem("access_token");
+  return {
+    "Content-Type": "application/json",
+    "Authorization": token ? `Bearer ${token}` : "",
+  };
+};
 
 export interface Faculty {
   id: string;
@@ -21,7 +29,7 @@ export interface UpdateFacultyPayload {
 // --------------- Public API ---------------
 
 export async function getFaculties(): Promise<Faculty[]> {
-  const response = await fetch(`${API_BASE_URL}/faculties`);
+  const response = await fetch(`${API_BASE_URL}/faculties/`, { headers: getHeaders() });
   if (!response.ok) {
     throw new Error("Failed to fetch faculties");
   }
@@ -29,11 +37,9 @@ export async function getFaculties(): Promise<Faculty[]> {
 }
 
 export async function createFaculty(data: CreateFacultyPayload): Promise<Faculty> {
-  const response = await fetch(`${API_BASE_URL}/faculties`, {
+  const response = await fetch(`${API_BASE_URL}/faculties/`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getHeaders(),
     body: JSON.stringify(data),
   });
 
@@ -44,11 +50,9 @@ export async function createFaculty(data: CreateFacultyPayload): Promise<Faculty
 }
 
 export async function updateFaculty(id: string, data: UpdateFacultyPayload): Promise<Faculty> {
-  const response = await fetch(`${API_BASE_URL}/faculties/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/faculties/${id}/`, {
     method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: getHeaders(),
     body: JSON.stringify(data),
   });
 
@@ -59,8 +63,9 @@ export async function updateFaculty(id: string, data: UpdateFacultyPayload): Pro
 }
 
 export async function deleteFaculty(id: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/faculties/${id}`, {
+  const response = await fetch(`${API_BASE_URL}/faculties/${id}/`, {
     method: "DELETE",
+    headers: getHeaders(),
   });
 
   if (!response.ok) {
