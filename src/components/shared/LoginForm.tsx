@@ -27,8 +27,8 @@ const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await signIn(identifier.trim(), password, role as any);
-      onSuccess?.(role);
+      const user = await signIn(identifier.trim(), password, role as any);
+      onSuccess?.(user.role);
     } catch (error) {
       alert("Login failed. Please check your credentials.");
     } finally {

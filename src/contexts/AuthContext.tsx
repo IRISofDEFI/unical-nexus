@@ -11,7 +11,7 @@ const API_BASE_URL = "https://unical-nexus-backend.onrender.com/api";
 
 type AppRole = "student" | "staff" | "admin";
 
-interface MockUser {
+export interface MockUser {
   id: string;
   email: string;
   role: AppRole;
@@ -20,7 +20,7 @@ interface MockUser {
 interface AuthContextType {
   user: MockUser | null;
   loading: boolean;
-  signIn: (identifier: string, password: string, role?: AppRole) => Promise<void>;
+  signIn: (identifier: string, password: string, role?: AppRole) => Promise<MockUser>;
   signOut: () => void;
 }
 
@@ -29,7 +29,7 @@ const STORAGE_KEY = "unical_mock_user";
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  signIn: async () => {},
+  signIn: async () => ({} as MockUser),
   signOut: () => {},
 });
 
@@ -81,6 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
       setUser(user);
+      return user;
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
