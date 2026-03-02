@@ -1,21 +1,8 @@
 /**
  * Department Service Layer
- *
- * Async functions that call the Supabase backend.
- * Uses dynamic import to avoid crashing the app if Supabase env vars are missing.
  */
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-
-let _supabase: SupabaseClient | null = null;
-
-async function getSupabase() {
-  if (!_supabase) {
-    const mod = await import("@/integrations/supabase/client");
-    _supabase = mod.supabase;
-  }
-  return _supabase;
-}
+const API_BASE_URL = "https://unical-nexus-backend.onrender.com";
 
 export interface Department {
   id: string;
@@ -43,56 +30,57 @@ export interface FacultyOption {
 // --------------- Public API ---------------
 
 export async function getFaculties(): Promise<FacultyOption[]> {
-  const supabase = await getSupabase();
-  const { data, error } = await supabase
-    .from("faculties")
-    .select("id, name")
-    .order("name");
-  if (error) throw error;
-  return data ?? [];
+  const response = await fetch(`${API_BASE_URL}/faculties`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch faculties");
+  }
+  return response.json();
 }
 
 export async function getDepartments(): Promise<Department[]> {
-  const supabase = await getSupabase();
-  const { data, error } = await supabase
-    .from("departments")
-    .select("id, name, faculty_id, created_at, faculties(name)")
-    .order("name");
-  if (error) throw error;
-  return (data ?? []).map((d: any) => ({
-    id: d.id,
-    name: d.name,
-    faculty_id: d.faculty_id,
-    faculty_name: d.faculties?.name ?? "",
-    created_at: d.created_at,
-  }));
+  const response = await fetch(`${API_BASE_URL}/departments`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch departments");
+  }
+  return response.json();
 }
 
 export async function createDepartment(payload: CreateDepartmentPayload): Promise<Department> {
-  const supabase = await getSupabase();
-  const { data, error } = await supabase
-    .from("departments")
-    .insert({ name: payload.name, faculty_id: payload.faculty_id })
-    .select("id, name, faculty_id, created_at")
-    .single();
-  if (error) throw error;
-  return data;
+  const response = await fetch(`${API_BASE_URL}/departments`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create department");
+  }
+  return response.json();
 }
 
 export async function updateDepartment(id: string, payload: UpdateDepartmentPayload): Promise<Department> {
-  const supabase = await getSupabase();
-  const { data, error } = await supabase
-    .from("departments")
-    .update(payload)
-    .eq("id", id)
-    .select("id, name, faculty_id, created_at")
-    .single();
-  if (error) throw error;
-  return data;
+  const response = await fetch(`${API_BASE_URL}/departments/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update department");
+  }
+  return response.json();
 }
 
 export async function deleteDepartment(id: string): Promise<void> {
-  const supabase = await getSupabase();
-  const { error } = await supabase.from("departments").delete().eq("id", id);
-  if (error) throw error;
+  const response = await fetch(`${API_BASE_URL}/departments/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete department");
+  }
 }
