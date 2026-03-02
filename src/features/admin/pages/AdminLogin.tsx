@@ -38,7 +38,7 @@ const AdminLogin = () => {
                   <h1 className="font-heading text-2xl font-semibold text-foreground">Admin Portal Login</h1>
                   <p className="text-muted-foreground text-sm mt-2">Access administrative controls</p>
                 </div>
-                <LoginForm onSuccess={handleLoginSuccess} userType="staff" />
+                <LoginForm onSuccess={handleLoginSuccess} userType="admin" />
                 <div className="mt-6 pt-6 border-t border-border text-center space-y-2">
                   <p className="text-sm text-muted-foreground">
                     Not an admin?{" "}

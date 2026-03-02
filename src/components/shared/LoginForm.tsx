@@ -10,27 +10,33 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface LoginFormProps {
   onSuccess?: (role: string) => void;
-  userType?: "student" | "staff";
+  userType?: "student" | "staff" | "admin";
 }
 
 const LoginForm = ({ onSuccess, userType = "student" }: LoginFormProps) => {
-  const { signIn } = useAuth();
+  const { signIn, signOut } = useAuth();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const role = userType === "staff" ? "staff" : "student";
+  const role = userType;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const user = await signIn(identifier.trim(), password, role as any);
+
+      if (user.role !== role) {
+        signOut();
+        throw new Error(`Access restricted: You cannot log in to the ${userType} portal with ${user.role} credentials.`);
+      }
+
       onSuccess?.(user.role);
     } catch (error) {
-      alert("Login failed. Please check your credentials.");
+      alert(error instanceof Error ? error.message : "Login failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
