@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import { Users, BarChart3, BookOpen, DollarSign } from "lucide-react";
+import { Users, BarChart3, BookOpen, DollarSign, Loader2 } from "lucide-react";
 
 /**
  * Admin Dashboard – Overview page with summary cards and mock data.
@@ -11,15 +13,53 @@ const stats = [
   { label: "Revenue (₦)", value: "₦284M", icon: DollarSign },
   { label: "Reports Generated", value: "89", icon: BarChart3 },
 ];
+const AdminDashboard = () => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
 const AdminDashboard = () => (
   <AdminLayout title="Dashboard" description="University administration overview">
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        const response = await fetch("https://unical-nexus-backend.onrender.com/api/dashboard/admin/", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setData(result);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  const stats = [
+    { label: "Total Students", value: data?.total_students?.toLocaleString() || "...", icon: Users },
+    { label: "Active Courses", value: "342", icon: BookOpen }, // Placeholder until backend adds this
+    { label: "Revenue (₦)", value: data?.total_revenue ? `₦${data.total_revenue.toLocaleString()}` : "...", icon: DollarSign },
+    { label: "Recent Transactions", value: data?.recent_transactions || "...", icon: BarChart3 },
+  ];
+
+  return (
+    <AdminLayout title="Dashboard" description="University administration overview">
     {/* Stats */}
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {stats.map((s) => (
         <div key={s.label} className="card-academic p-5">
           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
             <s.icon size={20} className="text-primary" />
+            {loading ? <Loader2 size={20} className="animate-spin text-primary" /> : <s.icon size={20} className="text-primary" />}
           </div>
           <p className="text-2xl font-heading font-bold text-foreground">{s.value}</p>
           <p className="text-sm text-muted-foreground mt-1">{s.label}</p>
@@ -64,5 +104,7 @@ const AdminDashboard = () => (
     </div>
   </AdminLayout>
 );
+  );
+};
 
 export default AdminDashboard;
