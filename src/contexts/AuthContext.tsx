@@ -7,7 +7,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
  * Persists user session in localStorage.
  */
 
-const API_BASE_URL = "https://unical-nexus-backend.onrender.com/api";
+const API_BASE_URL = "http://localhost:8005/api";
 
 type AppRole = "student" | "staff" | "admin";
 

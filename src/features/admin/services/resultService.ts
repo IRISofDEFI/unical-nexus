@@ -2,7 +2,7 @@
  * Result Service Layer
  */
 
-const API_BASE_URL = "https://unical-nexus-backend.onrender.com/api";
+const API_BASE_URL = "http://localhost:8005/api";
 
 const getHeaders = () => {
   const token = localStorage.getItem("access_token");
@@ -98,6 +98,25 @@ export async function updateResult(id: string, data: UpdateResultPayload): Promi
 
   if (!response.ok) {
     throw new Error("Failed to update result");
+  }
+  return response.json();
+}
+
+export async function uploadResults(file: File): Promise<any> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const token = localStorage.getItem("access_token");
+  const response = await fetch(`${API_BASE_URL}/results/upload/`, {
+    method: "POST",
+    headers: {
+      "Authorization": token ? `Bearer ${token}` : "",
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to upload results");
   }
   return response.json();
 }
