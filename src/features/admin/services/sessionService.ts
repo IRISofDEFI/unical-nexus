@@ -2,7 +2,7 @@
  * Session Service Layer
  */
 
-const API_BASE_URL = "http://localhost:8005/api";
+const API_BASE_URL = "https://unical-nexus-backend.onrender.com/api";
 
 const getHeaders = () => {
   const token = localStorage.getItem("access_token");
