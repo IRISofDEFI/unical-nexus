@@ -1,5 +1,10 @@
 import AdminLayout from "../../components/AdminLayout";
-import AdminPlaceholder from "../../components/AdminPlaceholder";
-import { Plus } from "lucide-react";
-const Page = () => (<AdminLayout title="Add Fee Item" description="Create a new fee item"><AdminPlaceholder title="Add Fee Item" icon={Plus} /></AdminLayout>);
-export default Page;
+
+const AddFeeItem = () => {
+  return (
+    <AdminLayout title="Add Fee Item" description="This page has been moved. Please use 'View / Edit Fee Items'.">
+    </AdminLayout>
+  );
+};
+
+export default AddFeeItem;
