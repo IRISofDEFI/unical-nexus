@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -7,42 +7,37 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getFacultyCharges, createFacultyCharge, deleteFacultyCharge, type FacultyCharge } from "../../services/feeService";
+
+// Mock data
+const MOCK_CHARGES = [
+  { id: "1", faculty: "Faculty of Science", department: "Computer Science", level: "100", amount: 45000, session: "2024/2025" },
+  { id: "2", faculty: "Faculty of Science", department: "Microbiology", level: "100", amount: 42000, session: "2024/2025" },
+];
 
 const FacultyCharges = () => {
-  const [charges, setCharges] = useState<FacultyCharge[]>([]);
+  const [charges, setCharges] = useState(MOCK_CHARGES);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ faculty: "", department: "", level: "", amount: "", session: "" });
   const { toast } = useToast();
 
-  const fetchCharges = async () => {
-    try {
-        const data = await getFacultyCharges();
-        setCharges(data);
-    } catch {
-        toast({ title: "Error", description: "Failed to load charges.", variant: "destructive" });
-    }
-  };
-
-  useEffect(() => { fetchCharges(); }, []);
-
-  const handleSave = async () => {
+  const handleSave = () => {
     setLoading(true);
-    try {
-      await createFacultyCharge({ ...formData, amount: Number(formData.amount) });
-      toast({ title: "Saved", description: "Faculty charge added successfully." });
+    setTimeout(() => {
+      const newCharge = { id: Date.now().toString(), ...formData, amount: Number(formData.amount) };
+      setCharges([...charges, newCharge]);
       setIsDialogOpen(false);
-      fetchCharges();
-    } catch {
-      toast({ title: "Error", description: "Failed to create charge.", variant: "destructive" });
-    } finally { setLoading(false); }
+      setLoading(false);
+      setFormData({ faculty: "", department: "", level: "", amount: "", session: "" });
+      toast({ title: "Saved", description: "Faculty charge added successfully." });
+    }, 500);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this charge?")) return;
-    await deleteFacultyCharge(id);
-    fetchCharges();
+  const handleDelete = (id: string) => {
+    if (confirm("Delete this charge?")) {
+      setCharges(charges.filter(c => c.id !== id));
+      toast({ title: "Deleted", description: "Charge removed." });
+    }
   };
 
   return (

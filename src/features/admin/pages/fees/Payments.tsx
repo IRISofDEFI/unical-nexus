@@ -1,25 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { getPayments, type Payment } from "../../services/paymentService";
+
+const MOCK_PAYMENTS = [
+    { id: "PAY-001", student: "John Doe", matric: "12345", amount: 45000, date: "2024-01-15", status: "Successful", ref: "REF123456" },
+    { id: "PAY-002", student: "Jane Smith", matric: "67890", amount: 2000, date: "2024-01-16", status: "Successful", ref: "REF789012" },
+];
 
 const Payments = () => {
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [payments] = useState(MOCK_PAYMENTS);
   const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    const loadPayments = async () => {
-      try {
-        const data = await getPayments();
-        setPayments(data);
-      } catch (error) {
-        console.error("Failed to load payments");
-      }
-    };
-    loadPayments();
-  }, []);
 
   const filteredPayments = payments.filter(p => 
       p.student.toLowerCase().includes(searchTerm.toLowerCase()) || 

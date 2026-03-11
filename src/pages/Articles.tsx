@@ -2,7 +2,52 @@ import { Calendar, ChevronRight, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { articlesData as articles } from "@/data/mockArticles";
+
+/**
+ * Articles Page
+ * List of news articles and announcements
+ * Features: Article cards with links to detail pages
+ */
+
+// Mock articles data
+const articles = [
+  {
+    id: "2026-admission-portal",
+    title: "2026 Admission Portal Now Open",
+    excerpt: "The University of Calabar is pleased to announce that the 2026/2027 admission portal is now open for prospective students. Applications are invited for various undergraduate and postgraduate programmes.",
+    date: "January 15, 2025",
+    category: "Admissions",
+    image: "/placeholder.svg",
+    featured: true,
+  },
+  {
+    id: "unical-ranked-top-10",
+    title: "UNICAL Ranked Top 10 Universities in Nigeria",
+    excerpt: "The University of Calabar has been ranked among the top 10 universities in Nigeria by the National Universities Commission (NUC) in their latest annual assessment report.",
+    date: "January 10, 2025",
+    category: "Rankings",
+    image: "/placeholder.svg",
+    featured: true,
+  },
+  {
+    id: "new-faculty-computing",
+    title: "New Faculty of Computing Launched",
+    excerpt: "In a groundbreaking development, the University of Calabar has established a new Faculty of Computing to meet the growing demand for technology professionals in Nigeria.",
+    date: "January 5, 2025",
+    category: "Academics",
+    image: "/placeholder.svg",
+    featured: false,
+  },
+  {
+    id: "academic-calendar-update",
+    title: "Academic Calendar Update for 2024/2025 Session",
+    excerpt: "The University management has released an updated academic calendar for the 2024/2025 academic session. Students are advised to note the revised dates for examinations and registration.",
+    date: "December 28, 2024",
+    category: "Announcements",
+    image: "/placeholder.svg",
+    featured: false,
+  },
+];
 
 const Articles = () => {
   const featuredArticles = articles.filter(a => a.featured);
