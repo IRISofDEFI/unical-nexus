@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "../../components/AdminLayout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -7,36 +7,42 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
-const MOCK_EXTRA_CHARGES = [
-  { id: "1", name: "Late Registration", amount: 5000, type: "Penalty" },
-  { id: "2", name: "Transcript Processing", amount: 15000, type: "Service" },
-];
+import { getExtraCharges, createExtraCharge, deleteExtraCharge, type ExtraCharge } from "../../services/feeService";
 
 const ExtraCharges = () => {
-  const [charges, setCharges] = useState(MOCK_EXTRA_CHARGES);
+  const [charges, setCharges] = useState<ExtraCharge[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", amount: "", type: "" });
   const { toast } = useToast();
 
-  const handleSave = () => {
-    setLoading(true);
-    setTimeout(() => {
-      const newCharge = { id: Date.now().toString(), ...formData, amount: Number(formData.amount) };
-      setCharges([...charges, newCharge]);
-      setIsDialogOpen(false);
-      setLoading(false);
-      setFormData({ name: "", amount: "", type: "" });
-      toast({ title: "Saved", description: "Extra charge added successfully." });
-    }, 500);
+  const fetchCharges = async () => {
+    try {
+      const data = await getExtraCharges();
+      setCharges(data);
+    } catch {
+      toast({ title: "Error", description: "Failed to load extra charges.", variant: "destructive" });
+    }
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm("Delete this charge?")) {
-      setCharges(charges.filter(c => c.id !== id));
-      toast({ title: "Deleted", description: "Charge removed." });
-    }
+  useEffect(() => { fetchCharges(); }, []);
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      await createExtraCharge({ ...formData, amount: Number(formData.amount) });
+      toast({ title: "Saved", description: "Extra charge added successfully." });
+      setIsDialogOpen(false);
+      fetchCharges();
+    } catch {
+      toast({ title: "Error", description: "Failed to save.", variant: "destructive" });
+    } finally { setLoading(false); }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this charge?")) return;
+    await deleteExtraCharge(id);
+    fetchCharges();
   };
 
   return (
