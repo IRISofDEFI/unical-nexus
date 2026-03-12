@@ -62,7 +62,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       if (!response.ok) {
-        throw new Error("Invalid login credentials");
+        let errorMessage = "Invalid login credentials";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.detail || errorData.message || errorData.non_field_errors?.[0] || errorMessage;
+        } catch {
+          errorMessage = `Login failed: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
