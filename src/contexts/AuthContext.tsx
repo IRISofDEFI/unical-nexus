@@ -52,7 +52,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = async (identifier: string, password: string, role: AppRole = "admin") => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login/`, {
+      const loginUrl = `${API_BASE_URL}/auth/login/`;
+      const response = await fetch(loginUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +68,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const errorData = await response.json();
           errorMessage = errorData.detail || errorData.message || errorData.non_field_errors?.[0] || errorMessage;
         } catch {
-          errorMessage = `Login failed: ${response.status} ${response.statusText}`;
+          if (response.status === 404) {
+            errorMessage = `Endpoint not found (404): ${loginUrl}`;
+          } else {
+            errorMessage = `Login failed: ${response.status} ${response.statusText}`;
+          }
         }
         throw new Error(errorMessage);
       }
